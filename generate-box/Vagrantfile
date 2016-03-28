@@ -1,0 +1,73 @@
+# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+#
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require_relative "../shared/configuration.rb"
+
+VAGRANTFILE_API_VERSION = "2"
+
+# Default values for the sw360 configuration. Those values can be overridden by environment variables:
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = SW360_basebox_name
+    v.customize ["modifyvm", :id, "--cpus", SW360_CPUs, "--memory", SW360_RAM]
+  end
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = 'trusty-server-cloudimg-amd64-vagrant-disk1'
+
+  # see: https://github.com/mitchellh/vagrant/pull/4707
+  config.ssh.insert_key = false
+
+  config.vm.synced_folder "../shared", "/vagrant_shared",
+                          :mount_options => ["dmode=775"]
+
+  facts = {
+    "tomcat_admin_password" => SW360_default_password,
+    "proxy_yes" => SW360_proxy
+  }
+
+  # setup proxy for vagrant plugin and puppet
+  if SW360_proxy == true
+    config.proxy.http = SW360_proxy_http
+    config.proxy.https = SW360_proxy_https
+    config.proxy.no_proxy = SW360_proxy_bypass
+
+    sw360_http_proxy_split = SW360_proxy_http.rpartition(':')
+    sw360_https_proxy_split = SW360_proxy_https.rpartition(':')
+    if sw360_http_proxy_split.size == 3 && sw360_http_proxy_split[2] != "" && sw360_https_proxy_split.size == 3 && sw360_https_proxy_split[2] != ""
+      sw360_http_proxy_url  = sw360_http_proxy_split[0]
+      sw360_http_proxy_port = sw360_http_proxy_split[2]
+      sw360_http_proxy_host = sw360_http_proxy_url.sub(/^https?\:\/\//, '')
+      sw360_https_proxy_url  = sw360_https_proxy_split[0]
+      sw360_https_proxy_port = sw360_https_proxy_split[2]
+      sw360_https_proxy_host = sw360_https_proxy_url.sub(/^https?\:\/\//, '')
+
+      facts.merge!({
+        "proxy_host_http" => sw360_http_proxy_host,
+        "proxy_port_http" => sw360_http_proxy_port,
+        "proxy_host_https" => sw360_https_proxy_host,
+        "proxy_port_https" => sw360_https_proxy_port
+      })
+    end
+  end
+
+  if SW360_network_host == true
+    config.vm.network "private_network", ip: "192.168.1.200"
+  end
+
+  # Configuration for the base box (maven, jdk, thrift, tomcat, nginx)
+  config.vm.provision :puppet, :module_path => "../puppet/modules" do |puppet|
+    puppet.manifests_path = "../puppet/manifests"
+    puppet.manifest_file  = "sw360-base.pp"
+    puppet.facter = facts
+  end
+end
