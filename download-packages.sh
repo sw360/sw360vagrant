@@ -105,7 +105,7 @@ addBoxToVagrant(){
 # -----------------------------------------------------------------------------
 #   Run
 # -----------------------------------------------------------------------------
-DIR="$( dirname $0 )/shared/packages"
+DIR=$(realpath "$( dirname $0 )/shared/packages")
 mkdir -p "$DIR" && pushd "$DIR" &>/dev/null
 case $1 in
     --clean)
@@ -117,6 +117,7 @@ case $1 in
     *)
         downloadAll
         addBoxToVagrant
+        cd $(dirname $DIR)
         setPermissions
     ;;
 esac
