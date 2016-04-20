@@ -30,7 +30,7 @@ else
   ssh-keygen -t rsa -f "/tmp/tmpkey" -q -N "" -C "This key was generated for SW360"
   privateKey="/tmp/tmpkey"
 
-  privateKeyTarget="/vagrant_shared/siemagrant_key_for_${SW360_vm_name}"
+  privateKeyTarget="/vagrant_shared/siemagrant_key_for_${SW360_basebox_name}"
   if [ -f $privateKeyTarget ]; then
     echo "private key vagrant already exists"
     mv "$privateKeyTarget" "${privateKeyTarget}_old}"
