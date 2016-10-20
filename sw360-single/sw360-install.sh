@@ -29,17 +29,15 @@ source $configurationFile
 wd=/sw360portal
 mavenParameters=""
 
-doFrontend=true
+doFrontend=false
 doPortlets=false
-doBackend=true
-doLibs=true
+doBackend=false
+doAll=true
 doClean=false
 
 resetDosIfNeeded() {
-    if $doFrontend && $doBackend && $doLibs; then
-        doFrontend=false
-        doBackend=false
-        doLibs=false
+    if $doAll; then
+        doAll=false
     fi
 }
 
@@ -159,14 +157,14 @@ fi
 echo "Copy fossology keys to $wd/backend/src/src-fossology/src/main/resources"
 cp /vagrant_shared/fossology.* $wd/backend/src/src-fossology/src/main/resources
 
-if [[ "$(ps -faux | grep 'Bootstrap start' | grep -vc grep)" -eq "0" ]]; then 
+if [[ "$(ps -faux | grep 'Bootstrap start' | grep -vc grep)" -eq "0" ]]; then
     echo "Starting tomcat"
     eval "$( /vagrant_shared/scripts/catalinaOpts.sh "${defaultOpts[@]}" "$@" )"
     CATALINA_OPTS="${CATALINA_OPTS}" /opt/apache-tomcat-7.0.*/bin/startup.sh
     echo "Waiting for reply of tomcat manager..."
     while [[ "$RESULT" -ne "22" ]]; do
         curl --fail http://localhost:8080/manager/html 2> /dev/null || RESULT=$?
-        sleep 1 
+        sleep 1
     done
     echo "Tomcat manager replied."
 fi
@@ -177,27 +175,25 @@ if $doClean; then
     mvn clean
 fi
 
-if $doLibs; then
-    mvn install $mavenParameters
-fi
-
-if $doBackend; then
-    echo "Start of backend deployment of sw360"
-    cd $wd/backend
-    mvn tomcat7:redeploy-only $mavenParameters
-fi
-
-if $doFrontend; then
-    echo "Start of frontend deployment of sw360"
-    cd $wd/frontend
+if $doAll; then
     mvn install -P deploy $mavenParameters
-elif $doPortlets; then
-    echo "Start of frontend deployment of sw360"
-    cd $wd/frontend/sw360-portlet
-    mvn install -P deploy $mavenParameters
-fi
+else
+	if $doBackend; then
+	    echo "Start of backend deployment of sw360"
+	    cd $wd/backend
+	    mvn install -P deploy $mavenParameters
+	fi
 
+	if $doFrontend; then
+	    echo "Start of frontend deployment of sw360"
+	    cd $wd/frontend
+	    mvn install -P deploy $mavenParameters
+	elif $doPortlets; then
+	    echo "Start of portlets deployment of sw360"
+	    cd $wd/frontend/sw360-portlet
+	    mvn install -P deploy $mavenParameters
+	fi
+fi
 echo "End of frontend sw360 installation"
 
 echo "End of sw360 provisioning"
-
