@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if SW360_use_insecure_Keypair == true
     config.ssh.private_key_path = "../shared/insecureKeypair/siemagrant"
   else
-    config.ssh.private_key_path = "../shared/siemagrant_key_for_" + SW360_vm_name
+    config.ssh.private_key_path = "../shared/siemagrant_key_for_" + SW360_basebox_name
   end
   # see: https://github.com/mitchellh/vagrant/pull/4707
   config.ssh.insert_key = false
