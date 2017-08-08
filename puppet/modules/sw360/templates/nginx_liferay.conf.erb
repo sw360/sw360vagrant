@@ -40,7 +40,7 @@ server {
 
     server_name liferay.localdomain;
 
-    location ~* /(manager|attachments|bdpimport|components|cvesearch|fossology|layouttpl|licenseinfo|licenses|moderation|projects|schedule|search|users|vendors|vulnerabilities)/ {
+    location ~* ^/(manager|attachments|bdpimport|components|cvesearch|fossology|layouttpl|licenseinfo|licenses|moderation|projects|schedule|search|users|vendors|vulnerabilities)/ {
         deny all;
     }
 
