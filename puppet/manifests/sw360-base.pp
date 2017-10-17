@@ -18,12 +18,25 @@ class box-configuration {
   class { 'apt':
     always_apt_update => true;
   }
-  apt::ppa { 'ppa:openjdk-r/ppa': }
-  apt::ppa { 'ppa:nginx/stable': }
-
+  
+  apt::ppa { 'ppa:openjdk-r/ppa':
+    before => [Exec['install-openjdk']]
+  }
+  apt::ppa { 'ppa:nginx/stable':
+    before => [Exec['install-nginx']]
+  }
+  
   package { ["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.3", "nginx"]:
     ensure => present,
     require => Class['apt'],
+  }
+
+  exec { 'install-nginx':
+    command => "/usr/bin/apt-get -q -y --force-yes -o DPkg::Options::=--force-confold install nginx",
+  }
+
+  exec { 'install-openjdk':
+    command => "/usr/bin/apt-get -q -y --force-yes -o DPkg::Options::=--force-confold install openjdk-8-jdk",
   }
 
   ##############################################################################
