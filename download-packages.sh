@@ -32,6 +32,7 @@ http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/li
 http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-dependencies-6.2-ce-ga5-20151118111117117.zip liferay-dependencies.zip
 http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-src-6.2-ce-ga5-20151118111117117.zip liferay-portal-src.zip
 https://github.com/rnewson/couchdb-lucene/archive/v1.0.2.tar.gz ./couchdb-lucene.tar.gz
+https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 https://jdbc.postgresql.org/download/postgresql-42.2.1.jar postgresql.jar
 https://dist.apache.org/repos/dist/release/thrift/0.11.0/thrift-0.11.0.tar.gz'
 
@@ -102,6 +103,7 @@ setPermissions(){
 }
 addBoxToVagrant(){
         vagrant box add --force xenial-server-cloudimg-amd64-vagrant "xenial-server-cloudimg-amd64-vagrant.box"
+        vagrant box add --force aws-dummy "dummy.box"
 }
 
 # -----------------------------------------------------------------------------

@@ -18,11 +18,19 @@ class box-configuration {
   class { 'apt':
     always_apt_update => true;
   }
-  apt::ppa { 'ppa:openjdk-r/ppa': }
 
-  package {["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.5", "apache2", "libapache2-mod-auth-mellon"]:
-    ensure => present,
+  apt::ppa { 'ppa:openjdk-r/ppa':
+    before => [Exec['install-openjdk']]
+  }
+
+  package { ["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.5", "apache2",
+    "libapache2-mod-auth-mellon"]:
+    ensure  => present,
     require => Class['apt'],
+  }
+
+  exec { 'install-openjdk':
+    command => "/usr/bin/apt-get -q -y --force-yes -o DPkg::Options::=--force-confold install openjdk-8-jdk",
   }
 
   ##############################################################################
@@ -134,10 +142,10 @@ class box-configuration {
     require => [User['siemagrant'],File[$tomcat_path]],
     creates => "${tomcat_path}/LICENSE",
   }
-  
+
 #------------------------------------------------------------
-# NB: the following will only 
-# be necessary when tomcat 8 is used    
+# NB: the following will only
+# be necessary when tomcat 8 is used
 #------------------------------------------------------------
 # Disable tomcat caching to avoid excessive log output
 #  file { 'context.xml':
@@ -184,14 +192,14 @@ class box-configuration {
     ensure  => absent,
     require => File[$liferay_data_path],
   }
-  
+
   # Ensure tomcat config path
   file { $tomcatconf_path:
     ensure  => 'directory',
     owner   => 'siemagrant',
     require => User['siemagrant'],
   }
-  
+
   # Configuration ROOT.xml that allows multiple web apps to use
   file { 'ROOT.xml':
     path    => "${tomcat_path}/conf/Catalina/localhost/ROOT.xml",
@@ -200,7 +208,7 @@ class box-configuration {
     ensure  => present,
     require => File[$tomcatconf_path],
   }
-  
+
   # Configuration to make ext libs available for liferay
   file { 'catalina.properties':
     path    => "${tomcat_path}/conf/catalina.properties",

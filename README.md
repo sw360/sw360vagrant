@@ -34,6 +34,10 @@ $ env | grep proxy
 ```
 $ vagrant plugin install vagrant-proxyconf
 ```
+* install the AWS plugin for vagrant if you setup AWS as provider
+```
+$ vagrant plugin install vagrant-aws
+```
 * adapt the Vagrantfile in the generate-box folder to set the proxy information
 ```
 $ vi shared/configuration.rb
@@ -67,6 +71,7 @@ The packages that are downloaded to `./shared/packages` are:
 * Apache Tomcat 7.0.67
 * Liferay 6.2.3-GA5
 * Couchdb-lucene 4.2.10
+* Postgresql-42.2.1
 
 ### 3. Generate base box
 
@@ -81,7 +86,7 @@ $ ./generate_box.sh
 This can take a while, but the the sw360-base box will be created, installed and ready
 to use.
 
-In a bit longer, the `generate_box.sh` script creates a new box based on a standard Ubuntu 14.04 box. Puppet then installs the required aptitude packages (openjdk-8-jdk, curl, unzip, couchdb, maven, gitcore, postgresql, nginx), generates the couchdblucene.war, unpacks tomcat and liferay, creates a new user "siemagrant" and adds a ssh key to it, so that the box can be accessed by ssh logging without password.
+In a bit longer, the `generate_box.sh` script creates a new box based on a standard Ubuntu 16.04 box. Puppet then installs the required aptitude packages (openjdk-8-jdk, curl, unzip, couchdb, maven, gitcore, postgresql, apache), generates the couchdblucene.war, unpacks tomcat and liferay, creates a new user "siemagrant" and adds a ssh key to it, so that the box can be accessed by ssh logging without password.
 
 ### 4. Provision a new box
 
@@ -116,7 +121,7 @@ $ cd sw360-single
 $ vagrant up
 ```
 The provisioning of the box (via puppet) configures liferay, tomcat8, and couchdb for the purpose of SW360 (port, paths, admin passwords, ...). 
-Additionally, nginx is configured to terminate TLS on port 8443 with a newly created self signed certificate.
+Additionally, apache is configured to terminate TLS on port 8443 with a newly created self signed certificate.
 If the option `sw360_install=true (default)` is used in the Vagrantfile, then also the code is fetched from Github, compiled with maven and deployed using tomcat:deploy (backend) and mvn install -Pdeploy (frontend) respectively. The fossology keys are copied to the appropriate directories. The tomcat instance for the backend
 and the liferay instance for the frontend start.
 
@@ -173,7 +178,12 @@ If you want to change the port on which sw360 is accessible from its default 844
   * obviously the Vagrant file: `config.vm.network "forwarded_port", guest: 8443, host: <your_port_here>`
   * and the liferay configuration in `puppet/modules/sw360/templates` since it generates absolute links: `web.server.https.port=<your_port_here>`
 
-### 9. License
+### 9. Problems
+
+Note: no proxy support for vagrant provider AWS.
+Please run the setup in a non proxy environment.
+
+### 10. License
 
 Copyright Siemens AG, 2013-2016. Part of the SW360 Portal Project.
 

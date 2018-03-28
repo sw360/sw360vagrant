@@ -42,6 +42,7 @@ publicKey="$privateKey.pub"
 mkdir -p /home/siemagrant/.ssh
 cat "$publicKey" > /home/siemagrant/.ssh/authorized_keys
 chown -R siemagrant:siemagrant /home/siemagrant/.ssh/
+chmod 700 /home/siemagrant/.ssh/
 chmod 600 /home/siemagrant/.ssh/authorized_keys
 
 if [ ! "$SW360_use_insecure_Keypair" = true ]; then
