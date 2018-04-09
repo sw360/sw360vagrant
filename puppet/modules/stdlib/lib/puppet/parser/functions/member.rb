@@ -1,28 +1,34 @@
+# TODO(Krzysztof Wilczynski): We need to add support for regular expression ...
+# TODO(Krzysztof Wilczynski): Support for strings and hashes too ...
 #
 # member.rb
 #
-
-# TODO(Krzysztof Wilczynski): We need to add support for regular expression ...
-# TODO(Krzysztof Wilczynski): Support for strings and hashes too ...
-
 module Puppet::Parser::Functions
-  newfunction(:member, :type => :rvalue, :doc => <<-EOS
-This function determines if a variable is a member of an array.
+  newfunction(:member, :type => :rvalue, :doc => <<-DOC
+    This function determines if a variable is a member of an array.
+    The variable can be a string, fixnum, or array.
 
-*Examples:*
+    *Examples:*
 
-    member(['a','b'], 'b')
+        member(['a','b'], 'b')
 
-Would return: true
+    Would return: true
 
-    member(['a','b'], 'c')
+        member(['a', 'b', 'c'], ['a', 'b'])
 
-Would return: false
-    EOS
-  ) do |arguments|
+    would return: true
 
-    raise(Puppet::ParseError, "member(): Wrong number of arguments " +
-      "given (#{arguments.size} for 2)") if arguments.size < 2
+        member(['a','b'], 'c')
+
+    Would return: false
+
+        member(['a', 'b', 'c'], ['d', 'b'])
+
+    would return: false
+    DOC
+             ) do |arguments|
+
+    raise(Puppet::ParseError, "member(): Wrong number of arguments given (#{arguments.size} for 2)") if arguments.size < 2
 
     array = arguments[0]
 
@@ -30,12 +36,19 @@ Would return: false
       raise(Puppet::ParseError, 'member(): Requires array to work with')
     end
 
-    item = arguments[1]
+    unless arguments[1].is_a?(String) || arguments[1].is_a?(Integer) || arguments[1].is_a?(Array)
+      raise(Puppet::ParseError, 'member(): Item to search for must be a string, fixnum, or array')
+    end
 
-    raise(Puppet::ParseError, 'member(): You must provide item ' +
-      'to search for within array given') if item.empty?
+    item = if arguments[1].is_a?(String) || arguments[1].is_a?(Integer)
+             [arguments[1]]
+           else
+             arguments[1]
+           end
 
-    result = array.include?(item)
+    raise(Puppet::ParseError, 'member(): You must provide item to search for within array given') if item.respond_to?('empty?') && item.empty?
+
+    result = (item - array).empty?
 
     return result
   end

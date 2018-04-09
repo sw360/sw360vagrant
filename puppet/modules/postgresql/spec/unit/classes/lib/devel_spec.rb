@@ -11,7 +11,7 @@ describe 'postgresql::lib::devel', :type => :class do
   it { is_expected.to contain_class("postgresql::lib::devel") }
 
   describe 'link pg_config to /usr/bin' do
-    it { should contain_file('/usr/bin/pg_config') \
+    it { should_not contain_file('/usr/bin/pg_config') \
       .with_ensure('link') \
       .with_target('/usr/lib/postgresql/8.4/bin/pg_config')
     }
@@ -51,4 +51,23 @@ describe 'postgresql::lib::devel', :type => :class do
     }
   end
 
+  describe 'on Gentoo' do
+    let :facts do
+      {
+        :osfamily => 'Gentoo',
+        :operatingsystem => 'Gentoo',
+      }
+    end
+    let :params do
+      {
+        :link_pg_config => false,
+      }
+    end
+
+    it 'should fail to compile' do
+      expect {
+        is_expected.to compile
+      }.to raise_error(/is not supported/)
+    end
+  end
 end

@@ -1,0 +1,66 @@
+<% if @https_port && @https_port != 443%>
+  Listen <%= @https_port %>
+<% end %>
+<VirtualHost *:<%= @https_port %>>
+  ServerAdmin admin@sw360.org
+  ProxyRequests off
+  DocumentRoot /var/www/html
+  SSLEngine on
+  SSLProxyEngine on
+  SSLCertificateFile "/etc/apache2/certs/liferay.pem"
+  SSLCertificateKeyFile "/etc/apache2/certs/liferay.key"
+  ProxyPreserveHost On
+
+  ServerName liferay.localdomain
+
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+  # Possible values include: debug, info, notice, warn, error, crit,
+  # alert, emerg.
+  LogLevel error
+
+  <Location />
+    ProxyPass http://127.0.0.1:<%=@tomcat_port%>/
+    ProxyPassReverse http://127.0.0.1:<%=@tomcat_port%>/
+    Order allow,deny
+    Allow from all
+
+    #	MellonEnable "auth"
+    #	MellonSecureCookie On
+    #	MellonSessionLength 43200
+    #	MellonVariable sw360mellon
+    #	MellonCookieDomain sw360.org
+
+    # #MellonDefaultLoginPath is the location where one should be
+    # #redirected after an IdP-initiated login. Default is "/"
+    # #Default: MellonDefaultLoginPath "/"
+    #	MellonDefaultLoginPath "/group/guest/home"
+    # MellonPostReplay On
+
+    #	MellonSPPrivateKeyFile /etc/apache2/mellon/sw360.key
+    #	MellonSPCertFile       /etc/apache2/mellon/sw360.cert
+    #	MellonSPMetadataFile   /etc/apache2/mellon/sw360.xml
+    #	MellonIdPMetadataFile  /etc/apache2/mellon/idp.metadata.xml
+
+    #	MellonEndpointPath /saml
+
+    # #Request headers should be configured to be assigned from environment variables that mod_mellon
+    # #populates. These are set from the attributes in the saml response prefixed by MELLON_
+    # RequestHeader set Mellon-Email %{MELLON_EMAIL}e
+    # RequestHeader set Mellon-Extid %{MELLON_EXTID}e
+    # RequestHeader set Mellon-Surname %{MELLON_LASTNAME}e
+    # RequestHeader set Mellon-Givenname %{MELLON_GIVENNAME}e
+    # RequestHeader set Mellon-Orgcode %{MELLON_ORGCODE}e
+
+  </Location>
+  <Location "/saml">
+    ProxyPass !
+  </Location>
+
+  <LocationMatch  ^/(manager|attachments|bdpimport|components|cvesearch|fossology|layouttpl|licenseinfo|licenses|moderation|projects|schedule|search|users|vendors|vulnerabilities)>
+    Order allow,deny
+    Deny from all;
+  </LocationMatch>
+
+</VirtualHost>

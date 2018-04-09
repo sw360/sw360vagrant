@@ -3,10 +3,14 @@
 class postgresql::lib::devel(
   $package_name   = $postgresql::params::devel_package_name,
   $package_ensure = 'present',
-  $link_pg_config = true
+  $link_pg_config = $postgresql::params::link_pg_config
 ) inherits postgresql::params {
 
   validate_string($package_name)
+
+  if $::osfamily == 'Gentoo' {
+    fail('osfamily Gentoo does not have a separate "devel" package, postgresql::lib::devel is not supported')
+  }
 
   package { 'postgresql-devel':
     ensure => $package_ensure,
@@ -16,7 +20,7 @@ class postgresql::lib::devel(
 
   if $link_pg_config {
     if ( $postgresql::params::bindir != '/usr/bin' and $postgresql::params::bindir != '/usr/local/bin') {
-      file {'/usr/bin/pg_config':
+      file { '/usr/bin/pg_config':
         ensure => link,
         target => "${postgresql::params::bindir}/pg_config",
       }
