@@ -21,18 +21,18 @@
 # NB: Upgrading to tomcat 8 will be possible as soon as the following issue is
 # fixed:
 # https://issues.liferay.com/browse/LPS-61760
-# 
+#
 # Then use e.g.: http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.28/bin/apache-tomcat-8.0.28.tar.gz apache-tomcat.tar.gz
 #------------------------------------------------------------------------------
 
 #download liferay.war for deployment within tomcat and both liferay dependencies and liferay source code in order to get the necessary jar-files 
-packages='http://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box
+packages='https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box
 http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.67/bin/apache-tomcat-7.0.67.tar.gz apache-tomcat.tar.gz
 http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-6.2-ce-ga5-20151118111117117.war liferay.war
 http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-dependencies-6.2-ce-ga5-20151118111117117.zip liferay-dependencies.zip
 http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-src-6.2-ce-ga5-20151118111117117.zip liferay-portal-src.zip
 https://github.com/rnewson/couchdb-lucene/archive/v1.0.2.tar.gz ./couchdb-lucene.tar.gz
-https://jdbc.postgresql.org/download/postgresql-9.4.1207.jar postgresql.jar
+https://jdbc.postgresql.org/download/postgresql-42.2.1.jar postgresql.jar
 https://dist.apache.org/repos/dist/release/thrift/0.9.3/thrift-0.9.3.tar.gz'
 
 # -----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ setPermissions(){
     popd &>/dev/null
 }
 addBoxToVagrant(){
-        vagrant box add --force trusty-server-cloudimg-amd64-vagrant-disk1 "trusty-server-cloudimg-amd64-vagrant-disk1.box"
+        vagrant box add --force xenial-server-cloudimg-amd64-vagrant "xenial-server-cloudimg-amd64-vagrant.box"
 }
 
 # -----------------------------------------------------------------------------

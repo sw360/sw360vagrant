@@ -19,9 +19,8 @@ class box-configuration {
     always_apt_update => true;
   }
   apt::ppa { 'ppa:openjdk-r/ppa': }
-  apt::ppa { 'ppa:nginx/stable': }
 
-  package { ["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.3", "nginx"]:
+  package {["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.5", "apache2", "libapache2-mod-auth-mellon"]:
     ensure => present,
     require => Class['apt'],
   }
@@ -220,11 +219,37 @@ class box-configuration {
     require => [Exec['unpack_tomcat7','liferay-install']],
   }
 
- exec { 'liferay-install':
+  exec { 'liferay-install':
     command => "/vagrant_shared/scripts/liferay-install.sh",
     user    => 'siemagrant',
     creates => "/opt/apache-tomcat-7.0.67/lib/ext/activation.jar",
     require => [Exec['unpack_tomcat7'],File['ROOT.xml'],Package['unzip']],
+  }
+
+  exec { 'enable-apache-mod-ssl':
+    command => "/usr/sbin/a2enmod ssl",
+    user    => root,
+    require => [Package['apache2']],
+  }
+
+  exec { 'enable-apache-mod-proxy_http':
+    command => "/usr/sbin/a2enmod proxy_http",
+    user    => root,
+    require => [Package['apache2']],
+  }
+
+  exec { 'enable-apache-mod-headers':
+    command => "/usr/sbin/a2enmod headers",
+    user    => root,
+    require => [Package['apache2']],
+  }
+
+  if $enable_mellon {
+    exec { 'enable-apache-mod-auth-mellon':
+      command => "/usr/sbin/a2enmod auth_mellon",
+      user    => root,
+      require => [Package['apache2', 'libapache2-mod-auth-mellon']],
+    }
   }
 }
 

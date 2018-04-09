@@ -15,7 +15,7 @@ SW360_install=true
 # Set this to "true" when working with a network behind a proxy
 SW360_proxy=false
 SW360_proxy_http="http://192.168.1.1:3128"
-SW360_proxy_https="https://192.168.1.1:9443"
+SW360_proxy_https="http://192.168.1.1:3128"
 SW360_proxy_bypass="localhost,127.0.0.1"
 
 # if you need an additional "host only" network for accessing the host via network
@@ -27,8 +27,11 @@ SW360_default_password="sw360fossy" # admin password for liferay and tomcat
 SW360_admin_name="setup" # admin account name for liferay (only!)
 
 SW360_vm_name="sw360-single" # how the vm is named in your hypervisor
-SW360_basebox_name="sw360-trusty" # which baso box vagrant should consider
+SW360_basebox_name="sw360-xenial" # which base box vagrant should consider
 SW360_vagrant_user="siemagrant" # the user created and used for the installation process
+
+# set to true to prepare for saml authentication by installing and enabling mod_auth_mellon
+SW360_enable_mellon=false
 
 SW360_use_insecure_Keypair=false # setting this to true forces Vagrant to use the keypair in shared/insecureKeypair
 

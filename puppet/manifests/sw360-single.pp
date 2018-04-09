@@ -37,6 +37,7 @@ class box-configuration {
     owner  => 'siemagrant',
     target => '/vagrant/sw360-install.sh',
   }
+
   file { '/sw360portal':
     ensure => 'directory',
     owner  => 'siemagrant',
@@ -110,57 +111,50 @@ class box-configuration {
   }
 
   ###################
-  ## Nginx Setup   ##
+  ## Apache2 Setup ##
   ###################
 
-  $nginx_cert_dir = '/etc/nginx/certs'
-  $nginx_key = 'liferay.key'
-  $nginx_cert = 'liferay.pem'
+  $apache2_cert_dir = '/etc/apache2/certs'
+  $apache2_key = 'liferay.key'
+  $apache2_cert = 'liferay.pem'
 
-  file { 'nginx.conf':
-    path    => "/etc/nginx/nginx.conf",
-    content => template('sw360/nginx.conf.erb'),
-    owner   => 'root',
-    ensure  => 'present',
-    notify  => Service["nginx"], # Will cause the service to restart
-  }
-
-  file { 'nginx-certs':
-    path   => "${nginx_cert_dir}",
+  file { 'apache2-certs':
+    path   => "${apache2_cert_dir}",
     ensure => 'directory',
     owner  => 'root',
   }
 
-  exec { 'generate-nginx-certs':
-    command => "openssl req -newkey rsa:2048 -nodes -keyout ${nginx_key} -x509 -days 365 -out ${nginx_cert} -subj '/CN=liferay.localdomain'",
-    cwd => "${nginx_cert_dir}",
-    creates => ["${nginx_cert_dir}/${nginx_key}", "${nginx_cert_dir}/${nginx_cert}"],
+  exec { 'generate-apache2-certs':
+    command => "openssl req -newkey rsa:2048 -nodes -keyout ${apache2_key} -x509 -days 365 -out ${apache2_cert} -subj '/CN=liferay.localdomain'",
+    cwd => "${apache2_cert_dir}",
+    creates => ["${apache2_cert_dir}/${apache2_key}", "${apache2_cert_dir}/${apache2_cert}"],
     path => ['/usr/bin/'],
-    require => File['nginx-certs'],
+    require => File['apache2-certs'],
   }
 
-  file { 'nginx-liferay.conf':
-    path    => "/etc/nginx/sites-available/nginx-liferay.conf",
-    content => template('sw360/nginx_liferay.conf.erb'),
+  file { 'apache2-sw360.conf':
+    path    => "/etc/apache2/sites-available/sw360.conf",
+    content => template('sw360/apache2-sw360.conf.erb'),
     owner   => 'root',
     ensure  => 'present',
-    require => Exec['generate-nginx-certs'],
+    require => Exec['generate-apache2-certs'],
   }
 
-  file { 'nginx-default':
-    path    => "/etc/nginx/sites-enabled/default",
+  file { 'apache2-default':
+    path    => "/etc/apache2/sites-enabled/default",
     ensure  => 'absent',
   }
 
-  file { 'nginx-liferay-link':
-    path    => "/etc/nginx/sites-enabled/nginx-liferay.conf",
-    target  => "/etc/nginx/sites-available/nginx-liferay.conf",
+  file { 'apache2-sw360-link':
+    path    => "/etc/apache2/sites-enabled/sw360.conf",
+    target  => "/etc/apache2/sites-available/sw360.conf",
     ensure  => 'link',
-    notify  => Service["nginx"], # Will cause the service to restart
+    notify  => Service["apache2"], # Will cause the service to restart
+    require => File['apache2-sw360.conf'],
   }
 
-  # Restart nginx
-  service { 'nginx':
+  # Restart apache2
+  service { 'apache2':
     ensure  => "running",
     enable  => "true",
   }
