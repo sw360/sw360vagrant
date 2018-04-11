@@ -93,10 +93,12 @@ areAllFilesHere(){
     exit 0
 }
 setPermissions(){
-    echo "-[] Set read rights for other users"
+    pushd $1 &>/dev/null
+    echo "-[] Set read / execute permissions for other users"
     find . -exec chmod o+r {} \;
     find . -type d -exec chmod o+x {} \;
     find . -type f -name '*.sh' -exec chmod o+x {} \;
+    popd &>/dev/null
 }
 addBoxToVagrant(){
         vagrant box add --force trusty-server-cloudimg-amd64-vagrant-disk1 "trusty-server-cloudimg-amd64-vagrant-disk1.box"
@@ -105,7 +107,7 @@ addBoxToVagrant(){
 # -----------------------------------------------------------------------------
 #   Run
 # -----------------------------------------------------------------------------
-DIR="$( dirname $0 )/shared/packages"
+DIR=$(realpath "$( dirname $0 )/shared/packages")
 mkdir -p "$DIR" && pushd "$DIR" &>/dev/null
 case $1 in
     --clean)
@@ -117,7 +119,7 @@ case $1 in
     *)
         downloadAll
         addBoxToVagrant
-        setPermissions
+        setPermissions $(dirname $DIR)
     ;;
 esac
 popd &>/dev/null
