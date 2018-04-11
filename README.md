@@ -63,7 +63,7 @@ $ ./download-packages.sh
 manually)
 
 The packages that are downloaded to `./shared/packages` are:
-* The Ubuntu cloud-image box trusty-server-cloudimg-amd64-vagrant-disk1.box
+* The Ubuntu cloud-image box xenial-server-cloudimg-amd64-vagrant.box
 * Apache Tomcat 7.0.67
 * Liferay 6.2.3-GA5
 * Couchdb-lucene 4.2.10

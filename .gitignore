@@ -14,11 +14,21 @@
 
 
 #Ignore downloads
-sw360-trusty.box*
 *.box
 *.zip
+*.war
+*.jar
 *.tar.gz
 .vagrant
-
-
+*.deb
+*.crt
+siemagrant_key_for*
+*.backup
+*.log
 *.couch
+.bundle
+.idea
+*.iml
+/generate-box/*.box_old
+/shared/.sw360db_design/
+/shared/m2repo/

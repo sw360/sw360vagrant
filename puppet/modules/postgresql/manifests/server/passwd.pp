@@ -4,6 +4,16 @@ class postgresql::server::passwd {
   $user              = $postgresql::server::user
   $group             = $postgresql::server::group
   $psql_path         = $postgresql::server::psql_path
+  $port              = $postgresql::server::port
+  $database          = $postgresql::server::default_database
+  $module_workdir    = $postgresql::server::module_workdir
+
+  # psql will default to connecting as $user if you don't specify name
+  $_datbase_user_same = $database == $user
+  $_dboption = $_datbase_user_same ? {
+    false => " --dbname ${database}",
+    default => ''
+  }
 
   if ($postgres_password != undef) {
     # NOTE: this password-setting logic relies on the pg_hba.conf being
@@ -11,21 +21,25 @@ class postgresql::server::passwd {
     #  without specifying a password ('ident' or 'trust' security). This is
     #  the default for pg_hba.conf.
     $escaped = postgresql_escape($postgres_password)
-    $env = "env PGPASSWORD='${postgres_password}'"
     exec { 'set_postgres_postgrespw':
       # This command works w/no password because we run it as postgres system
       # user
-      command     => "${psql_path} -c 'ALTER ROLE \"${user}\" PASSWORD ${escaped}'",
+      command     => "${psql_path}${_dboption} -c \"ALTER ROLE \\\"${user}\\\" PASSWORD \${NEWPASSWD_ESCAPED}\"",
       user        => $user,
       group       => $group,
       logoutput   => true,
-      cwd         => '/tmp',
+      cwd         => $module_workdir,
+      environment => [
+        "PGPASSWORD=${postgres_password}",
+        "PGPORT=${port}",
+        "NEWPASSWD_ESCAPED=${escaped}",
+      ],
       # With this command we're passing -h to force TCP authentication, which
       # does require a password.  We specify the password via the PGPASSWORD
       # environment variable. If the password is correct (current), this
       # command will exit with an exit code of 0, which will prevent the main
       # command from running.
-      unless      => "${env} ${psql_path} -h localhost -c 'select 1' > /dev/null",
+      unless      => "${psql_path} -h localhost -p ${port} -c 'select 1' > /dev/null",
       path        => '/usr/bin:/usr/local/bin:/bin',
     }
   }
