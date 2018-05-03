@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------------------
-# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2018. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -34,6 +34,7 @@ doPortlets=false
 doBackend=false
 doAll=true
 doClean=false
+doRest=false
 
 resetDosIfNeeded() {
     if $doAll; then
@@ -66,6 +67,10 @@ while (( "$#" )); do
             resetDosIfNeeded
             doBackend=true
             ;;
+        -R|--doRest)
+            resetDosIfNeeded
+            doRest=true
+            ;;
         -0|--doNothing)
             resetDosIfNeeded
             ;;
@@ -85,6 +90,7 @@ while (( "$#" )); do
             echo "      -F|--doFrontend         # only(*) compile frontend"
             echo "      -P|--doPortlets         # only(*) compile portlets (subset of frontend)"
             echo "      -B|--doBackend          # only(*) compile backend"
+            echo "      -R|--doRest          	# only(*) compile rest services"
             echo "      -0|--doNothing          # compile nothing (can be overwritten by F,P,B)"
             echo "      -c|--clean              # do mvn clean bevore building"
             echo " (*) can be combined"
@@ -181,6 +187,11 @@ else
 	if $doBackend; then
 	    echo "Start of backend deployment of sw360"
 	    cd $wd/backend
+	    mvn install -P deploy $mavenParameters
+	fi
+	if $doRest; then
+	    echo "Start of rest services deployment of sw360"
+	    cd $wd/rest
 	    mvn install -P deploy $mavenParameters
 	fi
 
