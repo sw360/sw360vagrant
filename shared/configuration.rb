@@ -48,7 +48,7 @@ SW360_max_upload_filesize="1000m" # set the max upload files size in nginx in MB
 # For synchronization you might have to start `vagrant rsync-auto` manually
 SW360_source=""
 
-SW360_gitURL="https://github.com/sw360/sw360portal.git"
+SW360_gitURL="https://github.com/eclipse/sw360.git"
 SW360_branch="" # the value "" means: "don't change the branch"
 
 # FOSSology configuration:
