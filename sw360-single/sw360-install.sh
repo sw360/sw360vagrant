@@ -138,14 +138,17 @@ if [ -z $SW360_source ]; then
         if [ -d "$wd/.git/" ]; then
             cd "$wd"
             git checkout $SW360_branch || git checkout -b $SW360_branch
-            git pull $SW360_gitURL $SW360_branch
+            git fetch
+            git reset --hard origin/$SW360_branch
         else
             git clone -b $SW360_branch --single-branch $SW360_gitURL "$wd"
         fi
     else
         if [ -d "$wd/.git/" ]; then
             cd "$wd"
-            git pull $SW360_gitURL
+            currentBranch=$(git rev-parse --abbrev-ref HEAD)
+            git fetch
+            git reset --hard origin/$currentBranch
         else
             git clone --single-branch $SW360_gitURL "$wd"
         fi
