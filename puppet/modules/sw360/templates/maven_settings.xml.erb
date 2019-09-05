@@ -228,6 +228,13 @@ under the License.
     </profile>
     -->
 
+    <profile>
+      <id>sw360vagrant</id>
+      <properties>
+        <base.deploy.dir>/opt/sw360</base.deploy.dir>
+      </properties>
+    </profile>
+
     <!--
      | Here is another profile, activated by the system property 'target-env' with a value of 'dev',
      | which provides a specific path to the Tomcat instance. To use this, your plugin configuration
@@ -267,9 +274,10 @@ under the License.
   <!-- activeProfiles
    | List of profiles that are active for all builds.
    |
-  <activeProfiles>
-    <activeProfile>alwaysActiveProfile</activeProfile>
-    <activeProfile>anotherAlwaysActiveProfile</activeProfile>
-  </activeProfiles>
   -->
+  <activeProfiles>
+    <!--<activeProfile>alwaysActiveProfile</activeProfile>-->
+    <!--<activeProfile>anotherAlwaysActiveProfile</activeProfile>-->
+    <activeProfile>sw360vagrant</activeProfile>
+  </activeProfiles>
 </settings>

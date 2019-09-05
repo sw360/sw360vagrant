@@ -53,3 +53,5 @@ SW360_branch="" # the value "" means: "don't change the branch"
 
 # FOSSology configuration:
 SW360_fossology_address="172.16.101.143"
+
+SW360_deploy_dir="/opt/sw360"

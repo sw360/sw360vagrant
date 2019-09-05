@@ -34,7 +34,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   facts = {
     "tomcat_admin_password" => SW360_default_password,
     "proxy_yes" => SW360_proxy,
-    "enable_mellon" => SW360_enable_mellon
+    "enable_mellon" => SW360_enable_mellon,
+    "maven_base_deploy_dir" => SW360_deploy_dir
   }
 
   # setup proxy for vagrant plugin and puppet

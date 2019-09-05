@@ -105,6 +105,13 @@ class box-configuration {
     require => Package['maven'],
   }
 
+  # ensure existence of `base.deploy.dir`
+  file { $maven_base_deploy_dir:
+    ensure  => 'directory',
+    owner   => 'siemagrant',
+    require => User['siemagrant'],
+  }
+
   ##################
   ## Thrift Setup ##
   ##################
