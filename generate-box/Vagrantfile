@@ -1,4 +1,4 @@
-# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2018. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,22 +8,73 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require_relative "../shared/configuration.rb"
+# Require configuration settings
+require_relative '../shared/configuration.rb'
+
+# Require the AWS provider plugin
+require 'vagrant-aws'
 
 VAGRANTFILE_API_VERSION = "2"
 
-# Default values for the sw360 configuration. Those values can be overridden by environment variables:
-
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.provider "virtualbox" do |v|
-    v.name = SW360_basebox_name
-    v.customize ["modifyvm", :id, "--cpus", SW360_CPUs, "--memory", SW360_RAM]
-  end
-
-  # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = 'xenial-server-cloudimg-amd64-vagrant'
   config.vm.define SW360_basebox_name
+
+  if SW360_provider == "virtualbox"
+
+    # Every Vagrant virtual environment requires a box to build off of.
+    config.vm.box = 'xenial-server-cloudimg-amd64-vagrant'
+
+    # Virtualbox provider
+    config.vm.provider "virtualbox" do |v|
+      v.name = SW360_basebox_name
+      v.customize ["modifyvm", :id, "--cpus", SW360_VB_CPUs, "--memory", SW360_VB_RAM]
+    end
+
+  else
+
+    # AWS can use a dummy box because its using a AMI anyway.
+    config.vm.box = 'aws-dummy'
+
+    # AWS provider
+    config.vm.provider :aws do |aws, override|
+
+      # Read AWS authentication information from environment variables
+      aws.access_key_id = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+
+      # Specify SSH keypair to use for the EC2 instance
+      aws.keypair_name = SW360_AWS_keypair_name
+
+      # Specify region, AMI ID, and security group(s)
+      aws.region = SW360_AWS_region
+      aws.availability_zone = SW360_AWS_availability_zone
+      aws.ami = SW360_AWS_ami_base
+      aws.instance_type = SW360_AWS_instance_type
+      aws.subnet_id = SW360_AWS_subnet_id
+      aws.security_groups = SW360_AWS_security_groups
+      aws.block_device_mapping = [
+          {
+              'DeviceName' => SW360_AWS_device_mapping_name,
+              'VirtualName' => SW360_AWS_device_mapping_virtual_name,
+              'Ebs.VolumeSize' => SW360_AWS_device_mapping_ebs_size,
+              'Ebs.VolumeType' => SW360_AWS_device_mapping_type,
+              'Ebs.DeleteOnTermination' => true,
+          }
+      ]
+
+      # Tag each sw360 instance with a name
+      aws.tags = {
+          'Name' => SW360_basebox_name
+      }
+
+      # Specify username and private key path
+      override.ssh.username = SW360_AWS_ssh_user
+      override.ssh.private_key_path = SW360_AWS_ssh_private_key
+      override.nfs.functional = false
+    end
+
+  end
 
   # see: https://github.com/mitchellh/vagrant/pull/4707
   config.ssh.insert_key = false
@@ -32,9 +83,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                           :mount_options => ["dmode=775"]
 
   facts = {
-    "tomcat_admin_password" => SW360_default_password,
-    "proxy_yes" => SW360_proxy,
-    "enable_mellon" => SW360_enable_mellon
+      "tomcat_admin_password" => SW360_default_password,
+      "proxy_yes" => SW360_proxy,
+      "enable_mellon" => SW360_enable_mellon
   }
 
   # setup proxy for vagrant plugin and puppet
@@ -46,19 +97,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     sw360_http_proxy_split = SW360_proxy_http.rpartition(':')
     sw360_https_proxy_split = SW360_proxy_https.rpartition(':')
     if sw360_http_proxy_split.size == 3 && sw360_http_proxy_split[2] != "" && sw360_https_proxy_split.size == 3 && sw360_https_proxy_split[2] != ""
-      sw360_http_proxy_url  = sw360_http_proxy_split[0]
+      sw360_http_proxy_url = sw360_http_proxy_split[0]
       sw360_http_proxy_port = sw360_http_proxy_split[2]
       sw360_http_proxy_host = sw360_http_proxy_url.sub(/^https?\:\/\//, '')
-      sw360_https_proxy_url  = sw360_https_proxy_split[0]
+      sw360_https_proxy_url = sw360_https_proxy_split[0]
       sw360_https_proxy_port = sw360_https_proxy_split[2]
       sw360_https_proxy_host = sw360_https_proxy_url.sub(/^https?\:\/\//, '')
 
       facts.merge!({
-        "proxy_host_http" => sw360_http_proxy_host,
-        "proxy_port_http" => sw360_http_proxy_port,
-        "proxy_host_https" => sw360_https_proxy_host,
-        "proxy_port_https" => sw360_https_proxy_port
-      })
+                       "proxy_host_http" => sw360_http_proxy_host,
+                       "proxy_port_http" => sw360_http_proxy_port,
+                       "proxy_host_https" => sw360_https_proxy_host,
+                       "proxy_port_https" => sw360_https_proxy_port
+                   })
     end
   end
 
@@ -70,7 +121,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Configuration for the base box (maven, jdk, thrift, tomcat, apache2)
   config.vm.provision :puppet, :module_path => "../puppet/modules" do |puppet|
     puppet.manifests_path = "../puppet/manifests"
-    puppet.manifest_file  = "sw360-base.pp"
+    puppet.manifest_file = "sw360-base.pp"
     puppet.facter = facts
   end
+
 end
