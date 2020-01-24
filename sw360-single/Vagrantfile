@@ -134,7 +134,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if not File.exists?(File.join(File.dirname(__FILE__), ".vagrant/action_provision"))
     config.vm.provision "shell", run: "always" do |s|
-      s.path = "sw360-install.sh -s"
+      s.path = "sw360-install.sh"
       s.args = ["-0"]
       s.privileged = false
     end
@@ -142,7 +142,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if SW360_install == true
     config.vm.provision "shell" do |s|
-      s.path = "sw360-install.sh -s"
+      s.path = "sw360-install.sh"
       s.privileged = false
     end
   end
