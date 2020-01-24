@@ -90,14 +90,14 @@ class box-configuration {
   # Adding administrator to Tomcat and setting its password
   file { 'tomcat-users.xml':
     path    => "${tomcat_path}/conf/tomcat-users.xml",
-    content => template('sw360/tomcat7_tomcat-users.xml.erb'),
+    content => template('sw360/tomcat_tomcat-users.xml.erb'),
     ensure  => present,
   }
 
   # Setting the ports on which the backend will run, and setting dependencies
   file { 'server.xml':
     path    => "${tomcat_path}/conf/server.xml",
-    content => template('sw360/tomcat7_server.xml.erb'),
+    content => template('sw360/tomcat_server.xml.erb'),
     ensure  => present,
   }
 
