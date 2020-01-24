@@ -8,28 +8,22 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 #
-# script copying jar files from liferay-tomcat-bundle to tomcat and installng liferay into
-# the tomcat/webapps/ROOT folder
+# script copying the download, unpacking this
 # 
 # -----------------------------------------------------------------------------
 
 set -e
-echo "remove ROOT directory on target tomcat"
-rm -r -f /opt/apache-tomcat-7.0.67/webapps/ROOT/*
+echo "-[shell provisioning] Start installing liferay ..."
 
-echo "deploy ROOT directory from liferay bundle .war"
-/usr/bin/unzip /vagrant_shared/packages/liferay.war -d /opt/apache-tomcat-7.0.67/webapps/ROOT
+sudo cp /vagrant_shared/packages/liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz /opt
+cd /opt
+sudo tar -xvf liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz
+sudo chown -R siemagrant:siemagrant liferay-ce-portal-7.2.1-ga2
+sudo rm -f liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz
 
-echo "unpack and deploy dependencies"
-mkdir /opt/apache-tomcat-7.0.67/lib/ext
-/usr/bin/unzip /vagrant_shared/packages/liferay-dependencies.zip -d /tmp
-cp /tmp/liferay-portal-dependencies*/*.jar /opt/apache-tomcat-7.0.67/lib/ext
+#
+# postgresql jdbc driver needs to be covered as well ...
+# 
+cp /vagrant_shared/packages/postgresql-42.2.9.jar /opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17/lib/ext
 
-echo "unpack and deploy more dependencies from liferay source code"
-/usr/bin/unzip /vagrant_shared/packages/liferay-portal-src.zip -d /tmp
-cp /tmp/liferay-portal-src*/lib/development/{activation,jms,jta,jutf7,mail,persistence}.jar /opt/apache-tomcat-7.0.67/lib/ext
-cp /tmp/liferay-portal-src*/lib/portal/ccpp.jar /opt/apache-tomcat-7.0.67/lib/ext
-mkdir -p /opt/apache-tomcat-7.0.67/temp/liferay/com/liferay/portal/deploy/dependencies
-cp /tmp/liferay-portal-src*/lib/development/{resin,script-10}.jar /opt/apache-tomcat-7.0.67/temp/liferay/com/liferay/portal/deploy/dependencies
-
-cp /vagrant_shared/packages/postgresql.jar /opt/apache-tomcat-7.0.67/lib/ext
+echo "-[shell provisioning] end of installing liferay."

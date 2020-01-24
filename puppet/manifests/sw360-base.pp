@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -11,9 +11,10 @@ class box-configuration {
 
   # Path definitions
   $java_home='/usr/lib/jvm/java-8-openjdk-amd64/jre/'
-  $tomcat_path='/opt/apache-tomcat-7.0.67'
+  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
+  # todo check if the data path is required
   $liferay_data_path=['/opt/liferay','/opt/liferay/data']
-  $tomcatconf_path=['/opt/apache-tomcat-7.0.67/conf','/opt/apache-tomcat-7.0.67/conf/Catalina','/opt/apache-tomcat-7.0.67/conf/Catalina/localhost']
+  $LIFERAY_INSTALL='/opt/liferay-ce-portal-7.2.1-ga2/'
 
   class { 'apt':
     always_apt_update => true;
@@ -84,6 +85,7 @@ class box-configuration {
   }
 
   # Add LIFERAY_PATH environment variable
+  # todo check if that is required
   file_line { 'liferay path':
     ensure => present,
     line   => "LIFERAY_PATH=${tomcat_path}",
@@ -125,37 +127,16 @@ class box-configuration {
   }
 
   ###################
-  ## Tomcat7 Setup ##
+  ## Liferay Setup ##
   ###################
-
-  # Tomcat7 directory
-  file { $tomcat_path:
-    ensure  => 'directory',
-    owner   => 'siemagrant',
-    require => User['siemagrant'],
-  }
-
-  # Unpack Tomcat7
-  exec { 'unpack_tomcat7':
-    command => "/bin/tar xvzf /vagrant_shared/packages/apache-tomcat.tar.gz -C /opt",
+  
+  # execute beasic unpack and copy of liferay distro
+  exec { 'liferay-install':
+    command => "/vagrant_shared/scripts/liferay-install.sh",
     user    => 'siemagrant',
-    require => [User['siemagrant'],File[$tomcat_path]],
-    creates => "${tomcat_path}/LICENSE",
+    require => [Package['unzip']],
   }
-
-#------------------------------------------------------------
-# NB: the following will only
-# be necessary when tomcat 8 is used
-#------------------------------------------------------------
-# Disable tomcat caching to avoid excessive log output
-#  file { 'context.xml':
-#    path    => "${tomcat_path}/conf/context.xml",
-#    content => template('sw360/context.xml'),
-#    owner   => 'siemagrant',
-#    ensure  => present,
-#    require => [File[$tomcatconf_path],Exec['unpack_tomcat7','liferay-install']],
-#  }
-
+  
   ###################
   ## Lucene Setup  ##
   ###################
@@ -164,75 +145,13 @@ class box-configuration {
     command => "/vagrant_shared/scripts/install-lucene.sh",
     user    => 'root',
     timeout => 1800,
-    require => [Package['unzip','maven','openjdk-8-jdk'], Exec['unpack_tomcat7'], File['maven_settings.xml']],
-    creates => "/opt/apache-tomcat-7.0.67/webapps/couchdb-lucene.war",
+    require => [Package['unzip','maven','openjdk-8-jdk'], File['maven_settings.xml'], Exec['liferay-install']],
+    creates => "${tomcat_path}/webapps/couchdb-lucene.war",
   }
 
   ###################
-  ## Liferay Setup ##
+  ## Apache Setup ##
   ###################
-
-  #Create Liferay directory
-  file { $liferay_data_path:
-    ensure  => 'directory',
-    owner   => 'siemagrant',
-    require => User['siemagrant'],
-  }
-
-  # Remove the default database, which defines default pages and user but also
-  # overrides the configuration of the server in "portal-ext.properties"
-  file { 'lportal.properties':
-    path    => "${liferay_data_path}/hsql/lportal.properties",
-    ensure  => absent,
-    require => File[$liferay_data_path],
-  }
-
-  file { 'lportal.script':
-    path    => "${liferay_data_path}/hsql/lportal.script",
-    ensure  => absent,
-    require => File[$liferay_data_path],
-  }
-
-  # Ensure tomcat config path
-  file { $tomcatconf_path:
-    ensure  => 'directory',
-    owner   => 'siemagrant',
-    require => User['siemagrant'],
-  }
-
-  # Configuration ROOT.xml that allows multiple web apps to use
-  file { 'ROOT.xml':
-    path    => "${tomcat_path}/conf/Catalina/localhost/ROOT.xml",
-    content => template('sw360/ROOT.xml'),
-    owner   => 'siemagrant',
-    ensure  => present,
-    require => File[$tomcatconf_path],
-  }
-
-  # Configuration to make ext libs available for liferay
-  file { 'catalina.properties':
-    path    => "${tomcat_path}/conf/catalina.properties",
-    content => template('sw360/catalina.properties'),
-    owner   => 'siemagrant',
-    ensure  => present,
-    require => File[$tomcatconf_path],
-  }
-
-  # Correct liferay's web.xml to avoid security warnings
-  file { 'web.xml':
-    path    => "${tomcat_path}/webapps/ROOT/WEB-INF/web.xml",
-    content => template('sw360/web.xml'),
-    owner   => 'siemagrant',
-    ensure  => present,
-    require => [Exec['unpack_tomcat7','liferay-install']],
-  }
-
-  exec { 'liferay-install':
-    command => "/vagrant_shared/scripts/liferay-install.sh",
-    user    => 'siemagrant',
-    creates => "/opt/apache-tomcat-7.0.67/lib/ext/activation.jar",
-    require => [Exec['unpack_tomcat7'],File['ROOT.xml'],Package['unzip']],
-  }
 
   exec { 'enable-apache-mod-ssl':
     command => "/usr/sbin/a2enmod ssl",
