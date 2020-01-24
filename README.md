@@ -18,8 +18,8 @@ Please see details about this below. Tested with linux, windows and macosx.
 The following packages are needed to install the SW360 software in a vagrant box:
 
 ```
-* vagrant
 * virtualbox
+* vagrant
 ``` 
 
 Clone from this repository.
@@ -62,16 +62,15 @@ new box is created. To start the downloads, run the following script:
 $ ./download-packages.sh
 ```
 
-
 (wget is used, might not work under Windows, but the files can also be downloaded
 manually)
 
 The packages that are downloaded to `./shared/packages` are:
-* The Ubuntu cloud-image box xenial-server-cloudimg-amd64-vagrant.box
-* Apache Tomcat 7.0.67
-* Liferay 6.2.3-GA5
-* Couchdb-lucene 4.2.10
-* Postgresql-42.2.1
+* Liferay 7.2.1 CE GA2 with Tomcat (9.0.17)
+* Postgresql-42.2.9 ODBC client for Java as *.jar file
+* Eleven *.jar files which are required for SW360 as dependencies, downloaded separatedly because of the OSGi-dependency mechanism of the Liferay
+* Thrift 0.11
+* A box images from the Ubuntu 16.04 LTS, namely `xenial-server-cloudimg-amd64-vagrant.box`
 
 ### 3. Generate base box
 
@@ -83,23 +82,11 @@ $ cd generate-box
 $ ./generate_box.sh
 ```
 
-This can take a while, but the the sw360-base box will be created, installed and ready
-to use.
+This can take a while, but the the sw360-base box will be created, installed and ready to use.
 
-In a bit longer, the `generate_box.sh` script creates a new box based on a standard Ubuntu 16.04 box. Puppet then installs the required aptitude packages (openjdk-8-jdk, curl, unzip, couchdb, maven, gitcore, postgresql, apache), generates the couchdblucene.war, unpacks tomcat and liferay, creates a new user "siemagrant" and adds a ssh key to it, so that the box can be accessed by ssh logging without password.
+In a bit longer, the `generate_box.sh` script creates a new box based on a standard Ubuntu 16.04 box as downloaded before. Puppet then installs the required aptitude packages (openjdk-8-jdk, curl, unzip, couchdb, maven, gitcore, postgresql, apache), generates the couchdblucene.war, unpacks tomcat and liferay, creates a new user "siemagrant" and adds a ssh key to it, so that the box can be accessed by ssh logging without password.
 
 ### 4. Provision a new box
-
-
-With this step, a new box is created from the sw360-base box and is configured to allow
-for the deployment of SW360. Before that, the fossology keys 
-
-
-* fossology.id_rsa and
-* fossology.id_rsa.pub
-
-
-have to be copied into the `./shared` directory. Furthermore, the `/shared/fossology.properties` might have to be adjusted.
 
 If you have built a vagrant box from this directory earlier, you will have to destroy it first via
 
@@ -114,16 +101,18 @@ In this case, simply execute:
 $ cd sw360-single
 $ SW360_SOURCE=/path/to/sourcedir/ vagrant up && vagrant rsync-auto
 ```
-In case you want the source code to be taken from the master branch of https://github.com/siemens/sw360portal.git, you simply need to run
+In case you want the source code to be taken from the master branch of https://github.com/eclipse/sw360, you simply need to run
 
 ```
 $ cd sw360-single
 $ vagrant up
 ```
-The provisioning of the box (via puppet) configures liferay, tomcat8, and couchdb for the purpose of SW360 (port, paths, admin passwords, ...). 
+
+The provisioning of the box (via puppet) configures liferay, postgresql and couchdb for the purpose of SW360 (port, paths, admin passwords, ...). 
+
 Additionally, apache is configured to terminate TLS on port 8443 with a newly created self signed certificate.
-If the option `sw360_install=true (default)` is used in the Vagrantfile, then also the code is fetched from Github, compiled with maven and deployed using tomcat:deploy (backend) and mvn install -Pdeploy (frontend) respectively. The fossology keys are copied to the appropriate directories. The tomcat instance for the backend
-and the liferay instance for the frontend start.
+
+If the option `sw360_install=true (default)` is used in the Vagrantfile, then also the code is fetched from Github, compiled with maven and deployed using tomcat:deploy (backend) and mvn install -Pdeploy (frontend) respectively.
 
 In principle, another base box can be used, as long as the required packages are installed
 (see above) and if the Vagrantfile is modified to contain the correct log-in information
@@ -142,7 +131,7 @@ You can configure the installation using various options. See `./sw360-install.s
 
 ### 6. (optional) Generating the Maven repository
 
-If you have just created the vagrant box, you should generate a maven repository with all the maven files that were just downloaded. Via the ssh-connection to your box, run:
+If you have just created the vagrant box, you should generate a maven repository with all the maven files that were just downloaded. This saves time when building boxes multiple times. Via the ssh-connection to your box, run:
 
 ```
 $ cd /vagrant
@@ -158,17 +147,12 @@ run steps 2, 3 and 4 again in order to install the maven repository to the box. 
 
 ### 7. Deploying the SW360 layout to Liferay
 
-
 The last step is to manually deploy the site layout into Liferay (as sadly automatic
-deployment is not working). To that end, log in to the Liferay instance (127.0.0.1:8081) as user setup@sw360.org,
-the default password is "sw360fossy" but it can be modified in the Puppet configuration (sw360-single.pp). Check
-whether the SW360 is present in Liferay. If it is not, restart the Liferay instance. 
+deployment is not working). To that end, log in to the Liferay instance (what ever was defined in the confguration.rb) as user setup@sw360.org,
+the default password is "sw360fossy" but it can be modified in the  configuration (`shared/configuration.rb`). Check
+whether the SW360 is present in Liferay.
 
-```
-$ /opt/liferay-portal-6.2*/tomcat-7*/bin/shutdown.sh 
-$ /opt/liferay-portal-6.2*/tomcat-7*/bin/startup.sh 
-```
-In order to further setup liferay, follow [the public repository] (https://github.com/siemens/sw360portal/wiki/Setup-Liferay)
+In order to further setup liferay, follow [the public repository] (https://github.com/eclipse/sw360/wiki/Deploy-Liferay)
 
 Your SW360 is now ready!
 
@@ -185,7 +169,7 @@ Please run the setup in a non proxy environment.
 
 ### 10. License
 
-Copyright Siemens AG, 2013-2016. Part of the SW360 Portal Project.
+Copyright Siemens AG, 2013-2016,2018,2019. Part of the SW360 Portal Project.
 
 For files created as vagrant scripts for the sw360portal project, the following license applies:
 
