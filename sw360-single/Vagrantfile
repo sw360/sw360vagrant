@@ -134,7 +134,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if not File.exists?(File.join(File.dirname(__FILE__), ".vagrant/action_provision"))
     config.vm.provision "shell", run: "always" do |s|
-      s.path = "sw360-install.sh"
+      s.path = "sw360-install.sh -s"
       s.args = ["-0"]
       s.privileged = false
     end
@@ -142,8 +142,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if SW360_install == true
     config.vm.provision "shell" do |s|
-      s.path = "sw360-install.sh"
+      s.path = "sw360-install.sh -s"
       s.privileged = false
     end
   end
+    
+  config.vm.post_up_message = "End of provisioning. Please try to call sw360 using your browser, for example: https://localhost:8443/"
 end

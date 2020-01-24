@@ -163,13 +163,10 @@ fi
 
 # -----------------------------------------------------------------------------
 
-echo "Copy fossology keys to $wd/backend/src/src-fossology/src/main/resources"
-cp /vagrant_shared/fossology.* $wd/backend/src/src-fossology/src/main/resources
-
 if [[ "$(ps -faux | grep 'Bootstrap start' | grep -vc grep)" -eq "0" ]]; then
     echo "Starting tomcat"
     eval "$( /vagrant_shared/scripts/catalinaOpts.sh "${defaultOpts[@]}" "$@" )"
-    CATALINA_OPTS="${CATALINA_OPTS}" /opt/apache-tomcat-7.0.*/bin/startup.sh
+    CATALINA_OPTS="${CATALINA_OPTS}" /opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17/bin/startup.sh
     echo "Waiting for reply of tomcat manager..."
     while [[ "$RESULT" -ne "22" ]]; do
         curl --fail http://localhost:8080/manager/html 2> /dev/null || RESULT=$?
@@ -181,31 +178,42 @@ fi
 echo "Start of installing of sw360"
 cd $wd/
 if $doClean; then
+    echo "execute mvn clean"
     mvn clean
 fi
 
 if $doAll; then
-    mvn install -P deploy $mavenParameters
+    echo "Start of entire deployment of sw360"
+    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+
 else
 	if $doBackend; then
 	    echo "Start of backend deployment of sw360"
 	    cd $wd/backend
-	    mvn install -P deploy $mavenParameters
+        mvn package -P deploy -Dbase.deploy.dir=. -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+
+	    # mvn install -P deploy $mavenParameters
 	fi
 	if $doRest; then
 	    echo "Start of rest services deployment of sw360"
 	    cd $wd/rest
-	    mvn install -P deploy $mavenParameters
+        mvn package -P deploy -Dbase.deploy.dir=. -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+
+	    # mvn install -P deploy $mavenParameters
 	fi
 
 	if $doFrontend; then
 	    echo "Start of frontend deployment of sw360"
 	    cd $wd/frontend
-	    mvn install -P deploy $mavenParameters
+	    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy $mavenParameters
+
+        # mvn install -P deploy $mavenParameters
 	elif $doPortlets; then
 	    echo "Start of portlets deployment of sw360"
 	    cd $wd/frontend/sw360-portlet
-	    mvn install -P deploy $mavenParameters
+	    
+	    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy $mavenParameters
+        # mvn install -P deploy $mavenParameters
 	fi
 fi
 echo "End of frontend sw360 installation"
