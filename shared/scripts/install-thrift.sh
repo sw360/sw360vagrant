@@ -17,16 +17,14 @@
 # -----------------------------------------------------------------------------
 
 set -e
-echo "-[shell provisioning] Installing dependencies of thrift"
+echo "-[shell provisioning] start installing thrift ..."
 apt-get update
 apt-get install -y libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev
-
 
 echo "-[shell provisioning] Extracting thrift"
 tar -xzf /vagrant_shared/packages/thrift-0.11.0.tar.gz -C /tmp/
 
 pushd /tmp/thrift-0.11.0/ &>/dev/null
-
 
 echo "-[shell provisioning] Building and installing thrift"
 ./configure --without-test --without-erlang --without-python --without-cpp --without-java --without-php
@@ -35,3 +33,5 @@ make install
 rm -rf /tmp/thrift-0.11.0/
 
 popd &>/dev/null
+
+echo "-[shell provisioning] end of installing thrift."

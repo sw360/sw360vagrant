@@ -16,7 +16,7 @@
 # -----------------------------------------------------------------------------
 
 set -e
-echo "-[shell provisioning] Installing couchdb-lucene"
+echo "-[shell provisioning] start installing couchdb-lucene ..."
 
 /bin/tar xvzf /vagrant_shared/packages/couchdb-lucene.tar.gz -C /tmp
 cp --remove-destination /vagrant_shared/couchdb-lucene.ini /tmp/couchdb-lucene-1.0.2/src/main/resources/
@@ -24,4 +24,6 @@ pushd /tmp/couchdb-lucene-1.0.2
 patch -p1 </vagrant_shared/couchdb-lucene.patch
 mvn clean install war:war
 popd
-cp --remove-destination /tmp/couchdb-lucene-1.0.2/target/couchdb-lucene-*.war /opt/apache-tomcat-7.0.67/webapps/couchdb-lucene.war
+cp --remove-destination /tmp/couchdb-lucene-1.0.2/target/couchdb-lucene-*.war /opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17/webapps/couchdb-lucene.war
+
+echo "-[shell provisioning] end of installing couchdb-lucene."

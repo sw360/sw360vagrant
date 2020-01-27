@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -19,7 +19,9 @@ class box-configuration {
 
   # Path definitions
   $java_home='/usr/lib/jvm/java-8-openjdk-amd64/jre/'
-  $tomcat_path='/opt/apache-tomcat-7.0.67'
+  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
+  $liferay_install='/opt/liferay-ce-portal-7.2.1-ga2'
+  $sw360_settings_path='/etc/sw360'
 
   ############################
   # General Box Configuation #
@@ -38,11 +40,19 @@ class box-configuration {
     target => '/vagrant/sw360-install.sh',
   }
 
+  # adding virtual box shared folder
   file { '/sw360portal':
     ensure => 'directory',
     owner  => 'siemagrant',
   }
-
+  
+  # todo put this into the generate-box build
+  file_line { "liferay_install":
+    ensure  => present,
+    line    => "LIFERAY_INSTALL=$liferay_install",
+    path    => "/etc/environment",
+  }
+  
   ####################
   ## Postgres Setup ##
   ####################
@@ -73,28 +83,21 @@ class box-configuration {
     enable  => "true",
   }
 
-  ###################
-  ## Tomcat7 Setup ##
-  ###################
+  ##################
+  ## Tomcat Setup ##
+  ##################
 
-  # Adding administrator to Tomcat7 and setting its password
+  # Adding administrator to Tomcat and setting its password
   file { 'tomcat-users.xml':
     path    => "${tomcat_path}/conf/tomcat-users.xml",
-    content => template('sw360/tomcat7_tomcat-users.xml.erb'),
+    content => template('sw360/tomcat_tomcat-users.xml.erb'),
     ensure  => present,
   }
 
   # Setting the ports on which the backend will run, and setting dependencies
   file { 'server.xml':
     path    => "${tomcat_path}/conf/server.xml",
-    content => template('sw360/tomcat7_server.xml.erb'),
-    ensure  => present,
-  }
-
-  # Setting the ports on which the backend will run, and setting dependencies
-  file { 'setenv.sh':
-    path    => "${tomcat_path}/bin/setenv.sh",
-    content => template('sw360/setenv.sh'),
+    content => template('sw360/tomcat_server.xml.erb'),
     ensure  => present,
   }
 
@@ -103,13 +106,59 @@ class box-configuration {
   ###################
 
   # Configuration of the server (default admin name/password, portal settings, ...)
+  file { 'portal-developer.properties':
+    path    => "${tomcat_path}/webapps/ROOT/WEB-INF/classes/portal-developer.properties",
+    content => template('sw360/liferay_portal-developer.properties.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+  }
+  
+  # Configuration of the server (default admin name/password, portal settings, ...)
   file { 'portal-ext.properties':
-    path    => "${tomcat_path}/webapps/ROOT/WEB-INF/classes/portal-ext.properties",
+    path    => "${liferay_install}/portal-ext.properties",
     content => template('sw360/liferay_portal-ext.properties.erb'),
     owner   => 'siemagrant',
     ensure  => present,
   }
+  
+  #################
+  ## SW360 Setup ##
+  #################
 
+  # install basic dependencies
+  exec { 'liferay-install-bundle-deps':
+    command => "/vagrant_shared/scripts/install-bundle-deps.sh",
+    user    => 'siemagrant',
+  }
+  
+  #  creation of sw360 settings dir
+  file { 'sw360-dir':
+    path    => "${sw360_settings_path}",
+    owner   => 'siemagrant',
+    group  => 'siemagrant',
+    ensure => 'directory',
+  }
+
+  # Configuration of the sw360 for accessing couchdb
+  # TODO central couchdb file does not work because it
+  # spoils the test configuration, leaving it on files in bundles
+  # file { 'couchdb.properties':
+  #  path    => "${sw360_settings_path}/couchdb.properties",
+  #  content => template('sw360/couchdb.properties.erb'),
+  #  owner   => 'siemagrant',
+  #  ensure  => present,
+  #  require => File['sw360-dir']
+  # }
+  
+  # Configuration of the sw360 itself
+  file { 'sw360.properties':
+    path    => "${sw360_settings_path}/sw360.properties",
+    content => template('sw360/sw360.properties.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-dir']
+  }
+  
   ###################
   ## Apache2 Setup ##
   ###################

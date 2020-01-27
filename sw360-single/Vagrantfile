@@ -146,4 +146,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       s.privileged = false
     end
   end
+    
+  config.vm.post_up_message = "End of provisioning. Please try to call sw360 using your browser, for example: https://localhost:8443/"
 end

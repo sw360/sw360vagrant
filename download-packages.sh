@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------------------
-# Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015, 2019. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -15,26 +15,30 @@
 # initial author: cedric.bodet@tngtech.com
 # modified: birgit.heydenreich@tngtech.com
 # modified: maximilian.huber@tngtech.com
+# modified: michael.c.jaeger@tngtech.com
+#
 # -----------------------------------------------------------------------------
 
-#------------------------------------------------------------------------------
-# NB: Upgrading to tomcat 8 will be possible as soon as the following issue is
-# fixed:
-# https://issues.liferay.com/browse/LPS-61760
 #
-# Then use e.g.: http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.28/bin/apache-tomcat-8.0.28.tar.gz apache-tomcat.tar.gz
-#------------------------------------------------------------------------------
-
-#download liferay.war for deployment within tomcat and both liferay dependencies and liferay source code in order to get the necessary jar-files 
+# downloading all the big downloads
+#
 packages='https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box
-http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.67/bin/apache-tomcat-7.0.67.tar.gz apache-tomcat.tar.gz
-http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-6.2-ce-ga5-20151118111117117.war liferay.war
-http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-dependencies-6.2-ce-ga5-20151118111117117.zip liferay-dependencies.zip
-http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/6.2.4%20GA5/liferay-portal-src-6.2-ce-ga5-20151118111117117.zip liferay-portal-src.zip
+https://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.2.1%20GA2/liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2Flatest%2Fdownload&ts=1579524847&use_mirror=netcologne liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz
+https://search.maven.org/remotecontent?filepath=commons-codec/commons-codec/1.12/commons-codec-1.12.jar commons-codec-1.12.jar
+https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar commons-collections4-4.1.jar
+https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-csv/1.4/commons-csv-1.4.jar commons-csv-1.4.jar
+https://search.maven.org/remotecontent?filepath=commons-io/commons-io/2.6/commons-io-2.6.jar commons-io-2.6.jar
+https://search.maven.org/remotecontent?filepath=commons-lang/commons-lang/2.4/commons-lang-2.4.jar commons-lang-2.4.jar
+https://search.maven.org/remotecontent?filepath=commons-logging/commons-logging/1.2/commons-logging-1.2.jar commons-logging-1.2.jar
+https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar gson-2.8.5.jar
+https://search.maven.org/remotecontent?filepath=com/google/guava/guava/21.0/guava-21.0.jar guava-21.0.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar jackson-annotations-2.9.8.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar jackson-core-2.9.8.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar jackson-databind-2.9.8.jar
+https://jdbc.postgresql.org/download/postgresql-42.2.9.jar postgresql-42.2.9.jar
+https://dist.apache.org/repos/dist/release/thrift/0.11.0/thrift-0.11.0.tar.gz
 https://github.com/rnewson/couchdb-lucene/archive/v1.0.2.tar.gz ./couchdb-lucene.tar.gz
-https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
-https://jdbc.postgresql.org/download/postgresql-42.2.1.jar postgresql.jar
-https://dist.apache.org/repos/dist/release/thrift/0.11.0/thrift-0.11.0.tar.gz'
+https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
 
 # -----------------------------------------------------------------------------
 #   Functions
