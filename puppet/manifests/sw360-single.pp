@@ -140,13 +140,15 @@ class box-configuration {
   }
 
   # Configuration of the sw360 for accessing couchdb
-  file { 'couchdb.properties':
-    path    => "${sw360_settings_path}/couchdb.properties",
-    content => template('sw360/couchdb.properties.erb'),
-    owner   => 'siemagrant',
-    ensure  => present,
-    require => File['sw360-dir']
-  }
+  # TODO central couchdb file does not work because it
+  # spoils the test configuration, leaving it on files in bundles
+  # file { 'couchdb.properties':
+  #  path    => "${sw360_settings_path}/couchdb.properties",
+  #  content => template('sw360/couchdb.properties.erb'),
+  #  owner   => 'siemagrant',
+  #  ensure  => present,
+  #  require => File['sw360-dir']
+  # }
   
   # Configuration of the sw360 itself
   file { 'sw360.properties':
