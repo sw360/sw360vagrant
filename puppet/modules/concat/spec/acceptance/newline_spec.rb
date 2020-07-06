@@ -2,17 +2,17 @@ require 'spec_helper_acceptance'
 
 describe 'concat ensure_newline parameter' do
   basedir = default.tmpdir('concat')
-  context '=> false' do
+  context 'when false' do
     before(:all) do
-      pp = <<-EOS
+      pp = <<-MANIFEST
         file { '#{basedir}':
           ensure => directory
         }
-      EOS
+      MANIFEST
 
       apply_manifest(pp)
     end
-    pp = <<-EOS
+    pp = <<-MANIFEST
       concat { '#{basedir}/file':
         ensure_newline => false,
       }
@@ -24,21 +24,21 @@ describe 'concat ensure_newline parameter' do
         target  => '#{basedir}/file',
         content => '2',
       }
-    EOS
+    MANIFEST
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{basedir}/file") do
-      it { should be_file }
-      its(:content) { should match '12' }
+      it { is_expected.to be_file }
+      its(:content) { is_expected.to match '12' }
     end
   end
 
-  context '=> true' do
-    pp = <<-EOS
+  context 'when true' do
+    pp = <<-MANIFEST
       concat { '#{basedir}/file':
         ensure_newline => true,
       }
@@ -50,18 +50,18 @@ describe 'concat ensure_newline parameter' do
         target  => '#{basedir}/file',
         content => '2',
       }
-    EOS
+    MANIFEST
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{basedir}/file") do
-      it { should be_file }
-      its(:content) {
-        should match /1\n2\n/
-      }
+      it { is_expected.to be_file }
+      its(:content) do
+        is_expected.to match %r{1\n2\n}
+      end
     end
   end
 end

@@ -7,7 +7,7 @@
 # without any warranty.
 #
 
-class box-configuration {
+class sw360single {
 
   $tomcat_port           = '8080' #Default: 8080
   $tomcat_server_port    = '8025' #Default: 8005
@@ -18,7 +18,6 @@ class box-configuration {
   $couchdb_bind_port    = '5984'
 
   # Path definitions
-  $java_home='/usr/lib/jvm/java-8-openjdk-amd64/jre/'
   $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
   $liferay_install='/opt/liferay-ce-portal-7.2.1-ga2'
   $sw360_settings_path='/etc/sw360'
@@ -209,4 +208,4 @@ class box-configuration {
   }
 }
 
-include box-configuration
+include sw360single

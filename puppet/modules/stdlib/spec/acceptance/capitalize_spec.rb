@@ -1,7 +1,6 @@
-#! /usr/bin/env ruby -S rspec
 require 'spec_helper_acceptance'
 
-describe 'capitalize function' do
+describe 'capitalize function', :if => Puppet::Util::Package.versioncmp(return_puppet_version, '6.0.0') < 0 do
   describe 'success' do
     pp1 = <<-DOC
         $input = 'this is a string'

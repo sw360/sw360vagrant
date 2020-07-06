@@ -27,7 +27,7 @@ SW360_default_password="sw360fossy" # admin password for liferay and tomcat
 SW360_admin_name="setup" # admin account name for liferay (only!)
 
 SW360_vm_name="sw360-single" # how the vm is named in your hypervisor
-SW360_basebox_name="sw360-xenial" # which base box vagrant should consider
+SW360_basebox_name="sw360-bionic" # which base box vagrant should consider
 SW360_vagrant_user="siemagrant" # the user created and used for the installation process
 SW360_enable_mellon=false # set to true to prepare for SAML authentication by installing and enabling mod_auth_mellon
 SW360_use_insecure_Keypair=true # setting this to true forces Vagrant to use the keypair in shared/insecureKeypair
@@ -50,8 +50,9 @@ SW360_provider="virtualbox" # available providers for vagrant: virtualbox, aws
 
 # Virtualbox section
 # Please refer to SW360_provider and set the value to virtualbox
-SW360_VB_CPUs=4
-SW360_VB_RAM=8192
+SW360_VB_CPUs=4 # well, how many logical cores ...
+SW360_VB_RAM=8192 # RAM in MB, should be at least 5GB
+SW360_VB_DISK=20000 # disk space in MB, should be at least 12GB
 
 # AWS section
 # Please refer to SW360_provider and set the value to aws

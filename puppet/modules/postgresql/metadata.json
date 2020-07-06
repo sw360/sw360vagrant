@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-postgresql",
-  "version": "4.9.0",
+  "version": "5.7.0",
   "author": "Inkling/Puppet Labs",
   "summary": "Offers support for basic management of PostgreSQL databases.",
   "license": "Apache-2.0",
@@ -8,11 +8,19 @@
   "project_page": "https://github.com/puppetlabs/puppetlabs-postgresql",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":"4.x"},
-    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"},
-    {"name":"puppetlabs/concat","version_requirement":">= 1.1.0 <3.0.0"}
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.13.1 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 2.0.0 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 1.1.0 < 5.0.0"
+    }
   ],
-  "data_provider": null,
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -41,7 +49,6 @@
     {
       "operatingsystem": "Scientific",
       "operatingsystemrelease": [
-        "5",
         "6",
         "7"
       ]
@@ -49,25 +56,33 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "11",
+        "12"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "10.04",
-        "12.04",
         "14.04",
-        "16.04"
+        "16.04",
+        "18.04"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 4.7.0 < 6.0.0"
     }
-  ]
+  ],
+  "pdk-version": "1.5.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates",
+  "template-ref": "heads/master-0-g34e3266"
 }

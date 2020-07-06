@@ -50,6 +50,7 @@ class postgresql::globals (
 
   $encoding                 = undef,
   $locale                   = undef,
+  $data_checksums           = undef,
   $timezone                 = undef,
 
   $manage_pg_hba_conf       = undef,
@@ -64,6 +65,8 @@ class postgresql::globals (
   $default_version = $::osfamily ? {
     /^(RedHat|Linux)/ => $::operatingsystem ? {
       'Fedora' => $::operatingsystemrelease ? {
+        /^(28)$/       => '10.4',
+        /^(26|27)$/    => '9.6',
         /^(24|25)$/    => '9.5',
         /^(22|23)$/    => '9.4',
         /^(21)$/       => '9.3',
@@ -93,6 +96,8 @@ class postgresql::globals (
         /^(14.04)$/ => '9.3',
         /^(14.10|15.04|15.10)$/ => '9.4',
         /^(16.04|16.10)$/ => '9.5',
+        /^(17.04|17.10)$/ => '9.6',
+        /^(18.04)$/ => '10',
         default => undef,
       },
       default => undef,
@@ -111,10 +116,13 @@ class postgresql::globals (
     'Suse' => $::operatingsystem ? {
       'SLES' => $::operatingsystemrelease ? {
         /11\.[0-4]/ => '91',
-        default => '93',
+        /12\.0/     => '93',
+        /12\.[1-2]/ => '94',
+        default     => '96',
       },
       'OpenSuSE' => $::operatingsystemrelease ? {
-        '13.2' => '93',
+        /42\.[1-2]/ => '94',
+        default     => '96',
       },
       default => undef,
     },
@@ -127,15 +135,15 @@ class postgresql::globals (
 
   $default_postgis_version = $globals_version ? {
     '8.1'   => '1.3.6',
-    '8.4'   => '1.5',
-    '9.0'   => '1.5',
-    '9.1'   => '1.5',
-    '91'    => '1.5',
-    '9.2'   => '2.0',
-    '9.3'   => '2.1',
-    '93'    => '2.1',
-    '9.4'   => '2.1',
-    '9.5'   => '2.2',
+    '8.4'   => '2.0',
+    '9.0'   => '2.1',
+    '9.1'   => '2.1',
+    '91'    => '2.1',
+    '9.2'   => '2.3',
+    '9.3'   => '2.3',
+    '93'    => '2.3',
+    '9.4'   => '2.3',
+    '9.5'   => '2.3',
     '9.6'   => '2.3',
     default => undef,
   }

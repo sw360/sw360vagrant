@@ -11,7 +11,6 @@
 # script automatically generating keys for password-free login onto
 # the vagrantbox
 #
-#
 # initial author: birgit.heydenreich@tngtech.com
 #
 # -----------------------------------------------------------------------------
@@ -22,15 +21,15 @@ apt-get update
 apt-get install -y libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev
 
 echo "-[shell provisioning] Extracting thrift"
-tar -xzf /vagrant_shared/packages/thrift-0.11.0.tar.gz -C /tmp/
+tar -xzf /vagrant_shared/packages/thrift-0.13.0.tar.gz -C /tmp/
 
-pushd /tmp/thrift-0.11.0/ &>/dev/null
+pushd /tmp/thrift-0.13.0/ &>/dev/null
 
 echo "-[shell provisioning] Building and installing thrift"
 ./configure --without-test --without-erlang --without-python --without-cpp --without-java --without-php
 make
 make install
-rm -rf /tmp/thrift-0.11.0/
+rm -rf /tmp/thrift-0.13.0/
 
 popd &>/dev/null
 

@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe 'postgresql::server::tablespace', :type => :define do
+describe 'postgresql::server::tablespace', type: :define do
   let :facts do
     {
-      :osfamily => 'Debian',
-      :operatingsystem => 'Debian',
-      :operatingsystemrelease => '6.0',
-      :kernel => 'Linux',
-      :concat_basedir => tmpfilename('tablespace'),
-      :id => 'root',
-      :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      osfamily: 'Debian',
+      operatingsystem: 'Debian',
+      operatingsystemrelease: '8.0',
+      kernel: 'Linux',
+      concat_basedir: tmpfilename('tablespace'),
+      id: 'root',
+      path: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
     }
   end
 
@@ -19,7 +19,7 @@ describe 'postgresql::server::tablespace', :type => :define do
 
   let :params do
     {
-      :location => '/srv/data/foo',
+      location: '/srv/data/foo',
     }
   end
 
@@ -28,12 +28,13 @@ describe 'postgresql::server::tablespace', :type => :define do
   end
 
   it { is_expected.to contain_postgresql__server__tablespace('test') }
+  it { is_expected.to contain_postgresql_psql('CREATE TABLESPACE "test"').that_requires('Class[postgresql::server::service]') }
 
-  context "with different owner" do
+  context 'with different owner' do
     let :params do
       {
-        :location => '/srv/data/foo',
-        :owner    => 'test_owner',
+        location: '/srv/data/foo',
+        owner: 'test_owner',
       }
     end
 
