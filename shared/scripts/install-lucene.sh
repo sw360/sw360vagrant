@@ -8,11 +8,11 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 #
-# script automatically generating keys for password-free login onto 
+# script automatically generating keys for password-free login onto
 # the vagrantbox
 #
 # initial author: birgit.heydenreich@tngtech.com
-# 
+#
 # -----------------------------------------------------------------------------
 
 set -e
@@ -24,6 +24,6 @@ pushd /tmp/couchdb-lucene-1.0.2
 patch -p1 </vagrant_shared/couchdb-lucene.patch
 mvn clean install war:war
 popd
-cp --remove-destination /tmp/couchdb-lucene-1.0.2/target/couchdb-lucene-*.war /opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17/webapps/couchdb-lucene.war
+cp --remove-destination /tmp/couchdb-lucene-1.0.2/target/couchdb-lucene-*.war /opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33/webapps/couchdb-lucene.war
 
 echo "-[shell provisioning] end of installing couchdb-lucene."

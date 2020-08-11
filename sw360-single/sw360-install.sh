@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------------------
-# Copyright Siemens AG, 2013-2018. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -15,7 +15,6 @@
 #         author: cedric.bodet@tngtech.com
 #         author: birgit.heydenreich@tngtech.com
 #         author: maximilian.huber@tngtech.com
-# $Id$
 # -----------------------------------------------------------------------------
 
 set -e
@@ -28,6 +27,7 @@ source $configurationFile
 
 wd=/sw360portal
 mavenParameters=""
+mavenMemory="-Xmx1024m -XX:MaxPermSize=1024m"
 
 doFrontend=false
 doPortlets=false
@@ -166,7 +166,7 @@ fi
 if [[ "$(ps -faux | grep 'Bootstrap start' | grep -vc grep)" -eq "0" ]]; then
     echo "Starting tomcat"
     eval "$( /vagrant_shared/scripts/catalinaOpts.sh "${defaultOpts[@]}" "$@" )"
-    CATALINA_OPTS="${CATALINA_OPTS}" /opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17/bin/startup.sh
+    CATALINA_OPTS="${CATALINA_OPTS}" /opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33/bin/startup.sh
     echo "Waiting for reply of tomcat manager..."
     while [[ "$RESULT" -ne "22" ]]; do
         curl --fail http://localhost:8080/manager/html 2> /dev/null || RESULT=$?
@@ -177,6 +177,10 @@ fi
 
 echo "Start of installing of sw360"
 cd $wd/
+
+echo "Increasing memory for maven to $mavenMemory"
+export MAVEN_OPTS=$mavenMemory
+
 if $doClean; then
     echo "execute mvn clean"
     mvn clean
@@ -184,20 +188,20 @@ fi
 
 if $doAll; then
     echo "Start of entire deployment of sw360"
-    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.33/webapps -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.33/webapps $mavenParameters
 
 else
 	if $doBackend; then
 	    echo "Start of backend deployment of sw360"
 	    cd $wd/backend
-        mvn package -P deploy -Dbase.deploy.dir=. -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+        mvn package -P deploy -Dbase.deploy.dir=. -Dbackend.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.33/webapps $mavenParameters
 
 	    # mvn install -P deploy $mavenParameters
 	fi
 	if $doRest; then
 	    echo "Start of rest services deployment of sw360"
 	    cd $wd/rest
-        mvn package -P deploy -Dbase.deploy.dir=. -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.17/webapps $mavenParameters
+        mvn package -P deploy -Dbase.deploy.dir=. -Drest.deploy.dir=${LIFERAY_INSTALL}/tomcat-9.0.33/webapps $mavenParameters
 
 	    # mvn install -P deploy $mavenParameters
 	fi
@@ -211,7 +215,7 @@ else
 	elif $doPortlets; then
 	    echo "Start of portlets deployment of sw360"
 	    cd $wd/frontend/sw360-portlet
-	    
+
 	    mvn package -P deploy -Dbase.deploy.dir=. -Dliferay.deploy.dir=${LIFERAY_INSTALL}/deploy $mavenParameters
         # mvn install -P deploy $mavenParameters
 	fi

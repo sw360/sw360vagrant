@@ -26,7 +26,7 @@ SW360_network_host=false
 SW360_default_password="sw360fossy" # admin password for liferay and tomcat
 SW360_admin_name="setup" # admin account name for liferay (only!)
 
-SW360_vm_name="sw360-single" # how the vm is named in your hypervisor
+SW360_vm_name="sw360-bingle" # how the vm is named in your hypervisor
 SW360_basebox_name="sw360-bionic" # which base box vagrant should consider
 SW360_vagrant_user="siemagrant" # the user created and used for the installation process
 SW360_enable_mellon=false # set to true to prepare for SAML authentication by installing and enabling mod_auth_mellon
@@ -42,7 +42,7 @@ SW360_max_upload_filesize="1000m" # set the max upload files size in apache in M
 # For synchronization you might have to start `vagrant rsync-auto` manually
 SW360_source=""
 SW360_gitURL="https://github.com/eclipse/sw360.git"
-SW360_branch="" # the value "" means: "don't change the branch"
+SW360_branch="mcj/chore/java11" # the value "" means: "don't change the branch"
 SW360_fossology_address="172.16.101.143" # FOSSology configuration:
 
 # Vagrant provider system
@@ -52,7 +52,7 @@ SW360_provider="virtualbox" # available providers for vagrant: virtualbox, aws
 # Please refer to SW360_provider and set the value to virtualbox
 SW360_VB_CPUs=4 # well, how many logical cores ...
 SW360_VB_RAM=8192 # RAM in MB, should be at least 5GB
-SW360_VB_DISK=20000 # disk space in MB, should be at least 12GB
+SW360_VB_DISK="20GB" # disk space in GB, should be at least 12GB
 
 # AWS section
 # Please refer to SW360_provider and set the value to aws

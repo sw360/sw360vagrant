@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019,2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -11,17 +11,17 @@ class sw360base {
 
   # Path definitions
   $java_home='/usr/lib/jvm/java-11-openjdk-amd64/'
-  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
   $puppet_does_not_allow_escaping='deb https://apache.bintray.com/couchdb-deb bionic main'
 
   package { ["software-properties-common", "unzip", "curl", "git-core", "maven", "openjdk-11-jdk", "postgresql-10", "apache2", "libapache2-mod-auth-mellon"]:
     ensure  => present,
   }
-  
+
   ##############################################################################
   # bionic does not have couchdb anymore. need to install ppa and then couchdb #                                                              #
   ##############################################################################
-  
+
   exec { 'install-couchdb-add-repo-key':
     path => ['/usr/bin', '/usr/sbin'],
     command => "curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -",
@@ -82,7 +82,7 @@ class sw360base {
   }
 
   ############################
-  # General Box Configuation #
+  # General Box Configuration #
   ############################
 
   # Setting the JAVA_HOME environment variable
@@ -129,14 +129,14 @@ class sw360base {
   ###################
   ## Liferay Setup ##
   ###################
-  
+
   # execute beasic unpack and copy of liferay distro
   exec { 'liferay-install':
     command => "/vagrant_shared/scripts/liferay-install.sh",
     user    => 'siemagrant',
     require => [Package['unzip']],
   }
-  
+
   ###################
   ## Lucene Setup  ##
   ###################

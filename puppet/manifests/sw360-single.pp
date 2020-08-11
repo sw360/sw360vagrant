@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019,2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -18,8 +18,8 @@ class sw360single {
   $couchdb_bind_port    = '5984'
 
   # Path definitions
-  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
-  $liferay_install='/opt/liferay-ce-portal-7.2.1-ga2'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
+  $liferay_install='/opt/liferay-ce-portal-7.3.3-ga4'
   $sw360_settings_path='/etc/sw360'
 
   ############################
@@ -44,14 +44,14 @@ class sw360single {
     ensure => 'directory',
     owner  => 'siemagrant',
   }
-  
+
   # todo put this into the generate-box build
   file_line { "liferay_install":
     ensure  => present,
     line    => "LIFERAY_INSTALL=$liferay_install",
     path    => "/etc/environment",
   }
-  
+
   ####################
   ## Postgres Setup ##
   ####################
@@ -111,7 +111,7 @@ class sw360single {
     owner   => 'siemagrant',
     ensure  => present,
   }
-  
+
   # Configuration of the server (default admin name/password, portal settings, ...)
   file { 'portal-ext.properties':
     path    => "${liferay_install}/portal-ext.properties",
@@ -119,7 +119,7 @@ class sw360single {
     owner   => 'siemagrant',
     ensure  => present,
   }
-  
+
   #################
   ## SW360 Setup ##
   #################
@@ -129,7 +129,7 @@ class sw360single {
     command => "/vagrant_shared/scripts/install-bundle-deps.sh",
     user    => 'siemagrant',
   }
-  
+
   #  creation of sw360 settings dir
   file { 'sw360-dir':
     path    => "${sw360_settings_path}",
@@ -148,7 +148,7 @@ class sw360single {
   #  ensure  => present,
   #  require => File['sw360-dir']
   # }
-  
+
   # Configuration of the sw360 itself
   file { 'sw360.properties':
     path    => "${sw360_settings_path}/sw360.properties",
@@ -157,7 +157,7 @@ class sw360single {
     ensure  => present,
     require => File['sw360-dir']
   }
-  
+
   ###################
   ## Apache2 Setup ##
   ###################
