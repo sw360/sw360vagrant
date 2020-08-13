@@ -32,3 +32,6 @@ siemagrant_key_for*
 /generate-box/*.box_old
 /shared/.sw360db_design/
 /shared/m2repo/
+
+# irnore macosx file system files
+.DS_Store
