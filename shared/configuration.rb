@@ -42,7 +42,7 @@ SW360_max_upload_filesize="1000m" # set the max upload files size in apache in M
 # For synchronization you might have to start `vagrant rsync-auto` manually
 SW360_source=""
 SW360_gitURL="https://github.com/eclipse/sw360.git"
-SW360_branch="mcj/chore/java11" # the value "" means: "don't change the branch"
+SW360_branch="" # the value "" means: "don't change the branch"
 SW360_fossology_address="172.16.101.143" # FOSSology configuration:
 
 # Vagrant provider system
@@ -51,7 +51,7 @@ SW360_provider="virtualbox" # available providers for vagrant: virtualbox, aws
 # Virtualbox section
 # Please refer to SW360_provider and set the value to virtualbox
 SW360_VB_CPUs=4 # well, how many logical cores ...
-SW360_VB_RAM=8192 # RAM in MB, should be at least 5GB
+SW360_VB_RAM=10000 # RAM in MB, should be at least 5GB
 SW360_VB_DISK="20GB" # disk space in GB, should be at least 12GB
 
 # AWS section
