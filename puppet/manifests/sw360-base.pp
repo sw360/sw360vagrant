@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019,2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -7,31 +7,39 @@
 # without any warranty.
 #
 
-class box-configuration {
+class sw360base {
 
   # Path definitions
-  $java_home='/usr/lib/jvm/java-8-openjdk-amd64/jre/'
-  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
-  # todo check if the data path is required
-  $liferay_data_path=['/opt/liferay','/opt/liferay/data']
-  $LIFERAY_INSTALL='/opt/liferay-ce-portal-7.2.1-ga2/'
+  $java_home='/usr/lib/jvm/java-11-openjdk-amd64/'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
+  $puppet_does_not_allow_escaping='deb https://apache.bintray.com/couchdb-deb bionic main'
 
-  class { 'apt':
-    always_apt_update => true;
-  }
-
-  apt::ppa { 'ppa:openjdk-r/ppa':
-    before => [Exec['install-openjdk']]
-  }
-
-  package { ["unzip", "curl", "git-core", "maven", "openjdk-8-jdk", "couchdb", "postgresql-9.5", "apache2",
-    "libapache2-mod-auth-mellon"]:
+  package { ["software-properties-common", "unzip", "curl", "git-core", "maven", "openjdk-11-jdk", "postgresql-10", "apache2", "libapache2-mod-auth-mellon"]:
     ensure  => present,
-    require => Class['apt'],
   }
 
-  exec { 'install-openjdk':
-    command => "/usr/bin/apt-get -q -y --force-yes -o DPkg::Options::=--force-confold install openjdk-8-jdk",
+  ##############################################################################
+  # bionic does not have couchdb anymore. need to install ppa and then couchdb #                                                              #
+  ##############################################################################
+
+  exec { 'install-couchdb-add-repo-key':
+    path => ['/usr/bin', '/usr/sbin'],
+    command => "curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -",
+  }
+  exec { 'install-couchdb-add-repo-url':
+    path => ['/usr/bin', '/usr/sbin', '/usr/local/sbin', '/usr/local/bin', '/sbin', '/bin'],
+    command => "echo $puppet_does_not_allow_escaping | sudo tee -a /etc/apt/sources.list",
+    require => Exec['install-couchdb-add-repo-key'],
+  }
+  exec { 'install-couchdb-update-apt':
+    path => ['/usr/bin', '/usr/sbin'],
+    command => "sudo apt-get update -y",
+    require => Exec['install-couchdb-add-repo-url'],
+  }
+  exec { 'install-couchdb-install-finally':
+    path => ['/usr/bin', '/usr/sbin'],
+    command => "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=2.1.2~bionic",
+    require => Exec['install-couchdb-update-apt'],
   }
 
   ##############################################################################
@@ -74,21 +82,13 @@ class box-configuration {
   }
 
   ############################
-  # General Box Configuation #
+  # General Box Configuration #
   ############################
 
   # Setting the JAVA_HOME environment variable
   file_line { 'java home':
     ensure => present,
     line   => "JAVA_HOME=${java_home}",
-    path   => '/etc/environment',
-  }
-
-  # Add LIFERAY_PATH environment variable
-  # todo check if that is required
-  file_line { 'liferay path':
-    ensure => present,
-    line   => "LIFERAY_PATH=${tomcat_path}",
     path   => '/etc/environment',
   }
 
@@ -129,14 +129,14 @@ class box-configuration {
   ###################
   ## Liferay Setup ##
   ###################
-  
+
   # execute beasic unpack and copy of liferay distro
   exec { 'liferay-install':
     command => "/vagrant_shared/scripts/liferay-install.sh",
     user    => 'siemagrant',
     require => [Package['unzip']],
   }
-  
+
   ###################
   ## Lucene Setup  ##
   ###################
@@ -145,7 +145,7 @@ class box-configuration {
     command => "/vagrant_shared/scripts/install-lucene.sh",
     user    => 'root',
     timeout => 1800,
-    require => [Package['unzip','maven','openjdk-8-jdk'], File['maven_settings.xml'], Exec['liferay-install']],
+    require => [Package['unzip','maven','openjdk-11-jdk'], File['maven_settings.xml'], Exec['liferay-install']],
     creates => "${tomcat_path}/webapps/couchdb-lucene.war",
   }
 
@@ -180,4 +180,4 @@ class box-configuration {
   }
 }
 
-include box-configuration
+include sw360base

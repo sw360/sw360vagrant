@@ -11,6 +11,9 @@ module Puppet::Parser::Functions
     * Number (or a string representation of a number) > 0 will return true, otherwise false
     * undef will return false
     * Anything else will return true
+
+    Also see the built-in [`Boolean.new`](https://puppet.com/docs/puppet/latest/function.html#conversion-to-boolean)
+    function.
   DOC
              ) do |arguments|
 
@@ -33,7 +36,7 @@ module Puppet::Parser::Functions
 
     valid_float = begin
                     !!Float(arg) # rubocop:disable Style/DoubleNegation : Could not find a better way to check if a boolean
-                  rescue # rubocop:disable Lint/RescueWithoutErrorClass
+                  rescue
                     false
                   end
 

@@ -1,4 +1,4 @@
-# Copyright Siemens AG, 2013-2018. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2018,2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -23,7 +23,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if SW360_provider == "virtualbox"
 
     # Every Vagrant virtual environment requires a box to build off of.
-    config.vm.box = 'xenial-server-cloudimg-amd64-vagrant'
+    config.vm.box = 'bionic-server-cloudimg-amd64-vagrant'
+    config.disksize.size = SW360_VB_DISK
 
     # Virtualbox provider
     config.vm.provider "virtualbox" do |v|
@@ -118,6 +119,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "shell", inline: "apt-get update && apt-get install -y puppet"
+  config.vm.provision "shell", inline: "puppet module install puppetlabs-apt"
+  config.vm.provision "shell", inline: "puppet module install puppetlabs-concat"
+  config.vm.provision "shell", inline: "puppet module install puppetlabs-postgresql"
+  config.vm.provision "shell", inline: "puppet module install puppetlabs-stdlib"
+
   # Configuration for the base box (maven, jdk, thrift, tomcat, apache2)
   config.vm.provision :puppet, :module_path => "../puppet/modules" do |puppet|
     puppet.manifests_path = "../puppet/manifests"

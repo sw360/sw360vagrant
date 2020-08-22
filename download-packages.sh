@@ -22,8 +22,8 @@
 #
 # downloading all the big downloads
 #
-packages='https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box
-https://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.2.1%20GA2/liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2Flatest%2Fdownload&ts=1579524847&use_mirror=netcologne liferay-ce-portal-tomcat-7.2.1-ga2-20191111141448326.tar.gz
+packages='https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box
+https://sourceforge.net/projects/lportal/files/Liferay%20Portal/7.3.3%20GA4/liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
 https://search.maven.org/remotecontent?filepath=commons-codec/commons-codec/1.12/commons-codec-1.12.jar commons-codec-1.12.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar commons-collections4-4.1.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-csv/1.4/commons-csv-1.4.jar commons-csv-1.4.jar
@@ -36,8 +36,8 @@ https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jacks
 https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar jackson-core-2.9.8.jar
 https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar jackson-databind-2.9.8.jar
 https://jdbc.postgresql.org/download/postgresql-42.2.9.jar postgresql-42.2.9.jar
-https://dist.apache.org/repos/dist/release/thrift/0.11.0/thrift-0.11.0.tar.gz
-https://github.com/rnewson/couchdb-lucene/archive/v1.0.2.tar.gz ./couchdb-lucene.tar.gz
+https://dist.apache.org/repos/dist/release/thrift/0.13.0/thrift-0.13.0.tar.gz
+https://github.com/rnewson/couchdb-lucene/archive/v2.1.0.tar.gz ./couchdb-lucene.tar.gz
 https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
 
 # -----------------------------------------------------------------------------
@@ -88,8 +88,12 @@ cleanAll(){
         echo "remove old apache-tomcat-8.0.26.tar.gz (downloaded by old version of this script)"
         rm apache-tomcat-8.0.26.tar.gz
     fi
-    echo "remove old liferay-tomcat-bundle versions" 
-    rm liferay-portal-tomcat-6.2-ce-ga*.zip 2>/dev/null  
+    if [ -e  xenial-server-cloudimg-amd64-vagrant.box ]; then
+        echo "remove old  xenial-server-cloudimg-amd64-vagrant.box (downloaded by old version of this script)"
+        rm  xenial-server-cloudimg-amd64-vagrant.box
+    fi
+    echo "remove old liferay-tomcat-bundle versions"
+    rm liferay-portal-tomcat-6.2-ce-ga*.zip 2>/dev/null
 }
 areAllFilesHere(){
     echo "$packages" | while read packageWithDest; do
@@ -106,7 +110,7 @@ setPermissions(){
     popd &>/dev/null
 }
 addBoxToVagrant(){
-        vagrant box add --force xenial-server-cloudimg-amd64-vagrant "xenial-server-cloudimg-amd64-vagrant.box"
+        vagrant box add --force bionic-server-cloudimg-amd64-vagrant "bionic-server-cloudimg-amd64-vagrant.box"
         vagrant box add --force aws-dummy "dummy.box"
 }
 

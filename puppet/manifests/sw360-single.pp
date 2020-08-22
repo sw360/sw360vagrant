@@ -1,5 +1,5 @@
 #
-# Copyright Siemens AG, 2013-2015,2019. Part of the SW360 Portal Project.
+# Copyright Siemens AG, 2013-2015,2019,2020. Part of the SW360 Portal Project.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -7,7 +7,7 @@
 # without any warranty.
 #
 
-class box-configuration {
+class sw360single {
 
   $tomcat_port           = '8080' #Default: 8080
   $tomcat_server_port    = '8025' #Default: 8005
@@ -18,9 +18,8 @@ class box-configuration {
   $couchdb_bind_port    = '5984'
 
   # Path definitions
-  $java_home='/usr/lib/jvm/java-8-openjdk-amd64/jre/'
-  $tomcat_path='/opt/liferay-ce-portal-7.2.1-ga2/tomcat-9.0.17'
-  $liferay_install='/opt/liferay-ce-portal-7.2.1-ga2'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
+  $liferay_install='/opt/liferay-ce-portal-7.3.3-ga4'
   $sw360_settings_path='/etc/sw360'
 
   ############################
@@ -45,14 +44,14 @@ class box-configuration {
     ensure => 'directory',
     owner  => 'siemagrant',
   }
-  
+
   # todo put this into the generate-box build
   file_line { "liferay_install":
     ensure  => present,
     line    => "LIFERAY_INSTALL=$liferay_install",
     path    => "/etc/environment",
   }
-  
+
   ####################
   ## Postgres Setup ##
   ####################
@@ -112,7 +111,7 @@ class box-configuration {
     owner   => 'siemagrant',
     ensure  => present,
   }
-  
+
   # Configuration of the server (default admin name/password, portal settings, ...)
   file { 'portal-ext.properties':
     path    => "${liferay_install}/portal-ext.properties",
@@ -120,7 +119,7 @@ class box-configuration {
     owner   => 'siemagrant',
     ensure  => present,
   }
-  
+
   #################
   ## SW360 Setup ##
   #################
@@ -130,7 +129,7 @@ class box-configuration {
     command => "/vagrant_shared/scripts/install-bundle-deps.sh",
     user    => 'siemagrant',
   }
-  
+
   #  creation of sw360 settings dir
   file { 'sw360-dir':
     path    => "${sw360_settings_path}",
@@ -149,7 +148,7 @@ class box-configuration {
   #  ensure  => present,
   #  require => File['sw360-dir']
   # }
-  
+
   # Configuration of the sw360 itself
   file { 'sw360.properties':
     path    => "${sw360_settings_path}/sw360.properties",
@@ -158,7 +157,7 @@ class box-configuration {
     ensure  => present,
     require => File['sw360-dir']
   }
-  
+
   ###################
   ## Apache2 Setup ##
   ###################
@@ -209,4 +208,4 @@ class box-configuration {
   }
 }
 
-include box-configuration
+include sw360single
