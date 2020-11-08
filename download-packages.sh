@@ -36,6 +36,7 @@ https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jacks
 https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar jackson-core-2.9.8.jar
 https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar jackson-databind-2.9.8.jar
 https://jdbc.postgresql.org/download/postgresql-42.2.9.jar postgresql-42.2.9.jar
+https://repo1.maven.org/maven2/org/apache/thrift/libthrift/0.13.0/libthrift-0.13.0.jar
 https://dist.apache.org/repos/dist/release/thrift/0.13.0/thrift-0.13.0.tar.gz
 https://github.com/rnewson/couchdb-lucene/archive/v2.1.0.tar.gz ./couchdb-lucene.tar.gz
 https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'

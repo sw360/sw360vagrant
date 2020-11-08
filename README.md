@@ -153,9 +153,9 @@ $ vagrant destroy,
 ```
 run steps 2, 3 and 4 again in order to install the maven repository to the box. This makes building the sw360 project a lot quicker in the future. After that, proceed with step 6.
 
-### 7. Deploying the SW360 layout to Liferay
+### 7. (not optional) Deploying the SW360 layout to Liferay
 
-The last step is to manually deploy the site layout into Liferay (as sadly automatic
+The last mandatory step  is to manually setup liferay and also deploy the site layout into Liferay (as sadly automatic
 deployment is not working). To that end, log in to the Liferay instance (what ever was defined in the confguration.rb) as user `setup@sw360.org`, the default password is `sw360fossy` but it can be modified in the  configuration (`shared/configuration.rb`). Check whether the SW360 is present in Liferay.
 
 In order to further setup liferay, follow the wiki pages of this project or [the public repository] (https://github.com/eclipse/sw360/wiki/)

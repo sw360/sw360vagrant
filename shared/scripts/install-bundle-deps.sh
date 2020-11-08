@@ -28,5 +28,6 @@ cp /vagrant_shared/packages/guava-21.0.jar  /opt/liferay-ce-portal-7.3.3-ga4/dep
 cp /vagrant_shared/packages/jackson-annotations-2.9.8.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/jackson-annotations-2.9.8.jar
 cp /vagrant_shared/packages/jackson-core-2.9.8.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/jackson-core-2.9.8.jar
 cp /vagrant_shared/packages/jackson-databind-2.9.8.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/jackson-databind-2.9.8.jar
+cp /vagrant_shared/packages/libthrift-0.13.0.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/libthrift-0.13.0.jar
 
 echo "-[shell provisioning] end of installing bundle dependencies."
