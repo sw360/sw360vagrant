@@ -9,7 +9,7 @@ Bascially, the vagrant install is about the following:
 
 The main reason why downloading pakages and creating the base box is separate
 from vagrant provisioning is that downloading and provisioning of dependencies
-takes some time. And this not necessary every time a deployment is started.
+takes some time. And this not necessary every time a new deployment is started.
 
 Please see details about this below. Tested with linux, windows and macosx. The hardware requirements can bee seen in the `shred/configuration.rb` file.
 
@@ -26,11 +26,12 @@ Clone from this repository.
 
 if you need to use a proxy server please follow this additional instructions before starting with the next chapter:
 
-* install the AWS plugin for vagrant if you setup AWS as provider
+* install the AWS plugin for vagrant (also if you do not setup AWS as provider)
 ```
 $ vagrant plugin install vagrant-aws
 ```
 (although you will not deploy to AWS, it is required, because vagrant parses the description files and finds some conditional statements which are not ignored)
+
 * install the disk size plugin for vagrant to change the virtual disk size (new!)
 ```
 $ vagrant plugin install vagrant-disksize
@@ -43,6 +44,8 @@ $ env | grep proxy
 ```
 $ vagrant plugin install vagrant-proxyconf
 ```
+Again, even if you do not need to use the functionality you will need to install the plug-ins, because vagrant cannot parse the vagrant file  other wise.
+
 * adapt the Vagrantfile in the generate-box folder to set the proxy information
 ```
 $ vi shared/configuration.rb
@@ -153,16 +156,16 @@ $ vagrant destroy,
 ```
 run steps 2, 3 and 4 again in order to install the maven repository to the box. This makes building the sw360 project a lot quicker in the future. After that, proceed with step 6.
 
-### 7. Deploying the SW360 layout to Liferay
+### 7. (not optional) Deploying the SW360 layout to Liferay
 
 The last step is to manually deploy the site layout into Liferay (as sadly automatic
 deployment is not working). To that end, log in to the Liferay instance (what ever was defined in the confguration.rb) as user `setup@sw360.org`, the default password is `sw360fossy` but it can be modified in the  configuration (`shared/configuration.rb`). Check whether the SW360 is present in Liferay.
 
 In order to further setup liferay, follow the wiki pages of this project or [the public repository] (https://github.com/eclipse/sw360/wiki/)
 
-Your SW360 is now ready!
+You really need to apply step 7 in order to complete the dpeloyment of sw360, it is not optional.
 
-### 8. Changing the external port
+### 8. (optional) Changing the external port
 
 If you want to change the port on which sw360 is accessible from its default 8443 to something else, this needs to be changed in two locations.
   * obviously the Vagrant file: `config.vm.network "forwarded_port", guest: 8443, host: <your_port_here>`
