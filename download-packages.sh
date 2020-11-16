@@ -25,16 +25,16 @@
 packages='https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box
 https://sourceforge.net/projects/lportal/files/Liferay%20Portal/7.3.3%20GA4/liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
 https://search.maven.org/remotecontent?filepath=commons-codec/commons-codec/1.12/commons-codec-1.12.jar commons-codec-1.12.jar
-https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar commons-collections4-4.1.jar
+https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar commons-collections4-4.4.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-csv/1.4/commons-csv-1.4.jar commons-csv-1.4.jar
 https://search.maven.org/remotecontent?filepath=commons-io/commons-io/2.6/commons-io-2.6.jar commons-io-2.6.jar
 https://search.maven.org/remotecontent?filepath=commons-lang/commons-lang/2.4/commons-lang-2.4.jar commons-lang-2.4.jar
 https://search.maven.org/remotecontent?filepath=commons-logging/commons-logging/1.2/commons-logging-1.2.jar commons-logging-1.2.jar
 https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar gson-2.8.5.jar
 https://search.maven.org/remotecontent?filepath=com/google/guava/guava/21.0/guava-21.0.jar guava-21.0.jar
-https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar jackson-annotations-2.9.8.jar
-https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar jackson-core-2.9.8.jar
-https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar jackson-databind-2.9.8.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.11.3/jackson-annotations-2.11.3.jar jackson-annotations-2.11.3.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-core/2.11.3/jackson-core-2.11.3.jar jackson-core-2.11.3.jar
+https://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-databind/2.11.3/jackson-databind-2.11.3.jar jackson-databind-2.11.3.jar
 https://jdbc.postgresql.org/download/postgresql-42.2.9.jar postgresql-42.2.9.jar
 https://dist.apache.org/repos/dist/release/thrift/0.13.0/thrift-0.13.0.tar.gz
 https://github.com/rnewson/couchdb-lucene/archive/v2.1.0.tar.gz ./couchdb-lucene.tar.gz
