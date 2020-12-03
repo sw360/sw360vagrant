@@ -11,8 +11,10 @@
 # Require configuration settings
 require_relative '../shared/configuration.rb'
 
-# Require the AWS provider plugin
-require 'vagrant-aws'
+unless ! Vagrant.has_plugin?("vagrant-aws")
+  # Require the AWS provider plugin
+  require 'vagrant-aws'
+end
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -33,6 +35,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
   else
+
+    unless Vagrant.has_plugin?("vagrant-aws")
+      raise 'vagrant-aws is not installed!'
+    end
 
     # AWS can use a dummy box because its using a AMI anyway.
     config.vm.box = 'aws-dummy'

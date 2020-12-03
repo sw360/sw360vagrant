@@ -26,11 +26,10 @@ Clone from this repository.
 
 if you need to use a proxy server please follow this additional instructions before starting with the next chapter:
 
-* install the AWS plugin for vagrant (also if you do not setup AWS as provider)
+* (optional, for support of aws as provider) install the AWS plugin for vagrant
 ```
 $ vagrant plugin install vagrant-aws
 ```
-(although you will not deploy to AWS, it is required, because vagrant parses the description files and finds some conditional statements which are not ignored)
 
 * install the disk size plugin for vagrant to change the virtual disk size (new!)
 ```
