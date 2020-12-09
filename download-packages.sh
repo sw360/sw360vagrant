@@ -27,6 +27,7 @@ set -eo pipefail
 packages='https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box
 https://sourceforge.net/projects/lportal/files/Liferay%20Portal/7.3.3%20GA4/liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
 https://search.maven.org/remotecontent?filepath=commons-codec/commons-codec/1.12/commons-codec-1.12.jar commons-codec-1.12.jar
+https://repo1.maven.org/maven2/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar commons-compress-1.20.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar commons-collections4-4.4.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-csv/1.4/commons-csv-1.4.jar commons-csv-1.4.jar
 https://search.maven.org/remotecontent?filepath=commons-io/commons-io/2.6/commons-io-2.6.jar commons-io-2.6.jar
