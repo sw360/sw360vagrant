@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
 # Copyright Siemens AG, 2013-2015, 2019. Part of the SW360 Portal Project.
@@ -18,6 +18,8 @@
 # modified: michael.c.jaeger@tngtech.com
 #
 # -----------------------------------------------------------------------------
+
+set -eo pipefail
 
 #
 # downloading all the big downloads

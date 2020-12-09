@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
 # Copyright Siemens AG, 2013-2015. Part of the SW360 Portal Project.
@@ -10,7 +10,7 @@
 #
 # -----------------------------------------------------------------------------
 
-set -e
+set -eo pipefail
 
 have() { type "$1" &> /dev/null; }
 have vagrant || {
