@@ -19,6 +19,7 @@ echo "-[shell provisioning] start installing bundle dependencies ..."
 #
 cp /vagrant_shared/packages/commons-codec-1.12.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-codec-1.12.jar
 cp /vagrant_shared/packages/commons-collections4-4.4.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-collections4-4.4.jar
+cp /vagrant_shared/packages/commons-compress-1.20.jar /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-compress-1.20.jar
 cp /vagrant_shared/packages/commons-csv-1.4.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-csv-1.4.jar
 cp /vagrant_shared/packages/commons-io-2.6.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-io-2.6.jar
 cp /vagrant_shared/packages/commons-lang-2.4.jar  /opt/liferay-ce-portal-7.3.3-ga4/deploy/commons-lang-2.4.jar
