@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'postgresql::server::reassign_owned_by:', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
+describe 'postgresql::server::reassign_owned_by:' do
   let(:db) { 'reassign_test' }
   let(:old_owner) { 'psql_reassign_old_owner' }
   let(:new_owner) { 'psql_reassign_new_owner' }
@@ -104,15 +104,10 @@ describe 'postgresql::server::reassign_owned_by:', unless: UNSUPPORTED_PLATFORMS
 
       it 'reassigns all objects to new_owner' do
         begin
-          # postgres version
-          result = shell('psql --version')
-          version = result.stdout.match(%r{\s(\d{1,2}\.\d)})[1]
-          if version >= '9.0'
-
+          if Gem::Version.new(postgresql_version) >= Gem::Version.new('9.0')
             apply_manifest(pp_setup + pp_db_old_owner + pp_setup_objects, catch_failures: true)
 
-            apply_manifest(pp_setup + pp_db_no_owner + pp_reassign_owned_by, catch_failures: true)
-            apply_manifest(pp_setup + pp_db_no_owner + pp_reassign_owned_by, catch_changes: true)
+            idempotent_apply(pp_setup + pp_db_no_owner + pp_reassign_owned_by)
 
             ## Check that the ownership was transferred
             psql("-d #{db} --tuples-only --no-align --command=\"SELECT tablename,tableowner FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema')\"", superuser) do |r|
@@ -123,7 +118,7 @@ describe 'postgresql::server::reassign_owned_by:', unless: UNSUPPORTED_PLATFORMS
               expect(r.stdout).to match(%r{test_seq.#{new_owner}})
               expect(r.stderr).to eq('')
             end
-            if version >= '9.3'
+            if Gem::Version.new(postgresql_version) >= Gem::Version.new('9.3')
               psql("-d #{db} --tuples-only --no-align --command=\"SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname = current_database()\"", superuser) do |r|
                 expect(r.stdout).to match(%r{#{new_owner}})
                 expect(r.stderr).to eq('')

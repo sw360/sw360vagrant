@@ -1,10 +1,13 @@
-# PRIVATE CLASS: do not call directly
+# @api private
 class postgresql::server::initdb {
   $needs_initdb   = $postgresql::server::needs_initdb
   $initdb_path    = $postgresql::server::initdb_path
   $datadir        = $postgresql::server::datadir
   $xlogdir        = $postgresql::server::xlogdir
   $logdir         = $postgresql::server::logdir
+  $manage_datadir = $postgresql::server::manage_datadir
+  $manage_logdir  = $postgresql::server::manage_logdir
+  $manage_xlogdir = $postgresql::server::manage_xlogdir
   $encoding       = $postgresql::server::encoding
   $locale         = $postgresql::server::locale
   $data_checksums = $postgresql::server::data_checksums
@@ -33,18 +36,18 @@ class postgresql::server::initdb {
     $logdir_type = undef
   }
 
-  # Make sure the data directory exists, and has the correct permissions.
-  file { $datadir:
-    ensure  => directory,
-    owner   => $user,
-    group   => $group,
-    mode    => '0700',
-    seltype => $seltype,
-  }
-
-  if($xlogdir) {
-    # Make sure the xlog directory exists, and has the correct permissions.
-    file { $xlogdir:
+  if($manage_datadir) {
+    # Make sure the data directory exists, and has the correct permissions.
+    file { $datadir:
+      ensure  => directory,
+      owner   => $user,
+      group   => $group,
+      mode    => '0700',
+      seltype => $seltype,
+    }
+  } else {
+    # changes an already defined datadir
+    File <| title == $datadir |> {
       ensure  => directory,
       owner   => $user,
       group   => $group,
@@ -53,13 +56,45 @@ class postgresql::server::initdb {
     }
   }
 
+  if($xlogdir) {
+    if($manage_xlogdir) {
+      # Make sure the xlog directory exists, and has the correct permissions.
+      file { $xlogdir:
+        ensure  => directory,
+        owner   => $user,
+        group   => $group,
+        mode    => '0700',
+        seltype => $seltype,
+      }
+    } else {
+      # changes an already defined xlogdir
+      File <| title == $xlogdir |>  {
+        ensure  => directory,
+        owner   => $user,
+        group   => $group,
+        mode    => '0700',
+        seltype => $seltype,
+      }
+    }
+  }
+
   if($logdir) {
-    # Make sure the log directory exists, and has the correct permissions.
-    file { $logdir:
-      ensure  => directory,
-      owner   => $user,
-      group   => $group,
-      seltype => $logdir_type,
+    if($manage_logdir) {
+      # Make sure the log directory exists, and has the correct permissions.
+      file { $logdir:
+        ensure  => directory,
+        owner   => $user,
+        group   => $group,
+        seltype => $logdir_type,
+      }
+    } else {
+      # changes an already defined logdir
+      File <| title == $logdir |> {
+        ensure  => directory,
+        owner   => $user,
+        group   => $group,
+        seltype => $logdir_type,
+      }
     }
   }
 
@@ -69,10 +104,10 @@ class postgresql::server::initdb {
     # We optionally add the locale switch if specified. Older versions of the
     # initdb command don't accept this switch. So if the user didn't pass the
     # parameter, lets not pass the switch at all.
-    $ic_base = "${initdb_path} --encoding '${encoding}' --pgdata '${datadir}'"
+    $ic_base = "${initdb_path} --pgdata '${datadir}'"
     $ic_xlog = $xlogdir ? {
       undef   => $ic_base,
-      default => "${ic_base} --xlogdir '${xlogdir}'"
+      default => "${ic_base} -X '${xlogdir}'"
     }
 
     # The xlogdir need to be present before initdb runs.
@@ -83,9 +118,15 @@ class postgresql::server::initdb {
       $require_before_initdb = [$datadir]
     }
 
-    $ic_locale = $locale ? {
+    # PostgreSQL 11 no longer allows empty encoding
+    $ic_encoding = $encoding ? {
       undef   => $ic_xlog,
-      default => "${ic_xlog} --locale '${locale}'"
+      default => "${ic_xlog} --encoding '${encoding}'"
+    }
+
+    $ic_locale = $locale ? {
+      undef   => $ic_encoding,
+      default => "${ic_encoding} --locale '${locale}'"
     }
 
     $initdb_command = $data_checksums ? {

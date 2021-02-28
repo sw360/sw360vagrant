@@ -11,34 +11,37 @@ class sw360base {
 
   # Path definitions
   $java_home='/usr/lib/jvm/java-11-openjdk-amd64/'
-  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
-  $puppet_does_not_allow_escaping='deb https://apache.bintray.com/couchdb-deb bionic main'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33'
+  $puppet_does_not_allow_escaping='deb https://apache.bintray.com/couchdb-deb focal main'
 
-  package { ["software-properties-common", "unzip", "curl", "git-core", "maven", "openjdk-11-jdk", "postgresql-10", "apache2", "libapache2-mod-auth-mellon"]:
+  package { ["make", "software-properties-common", "unzip", "curl", "git-core", "maven", "openjdk-11-jdk", "postgresql", "apache2", "libapache2-mod-auth-mellon"]:
     ensure  => present,
   }
 
   ##############################################################################
-  # bionic does not have couchdb anymore. need to install ppa and then couchdb #                                                              #
+  # since bionic ubuntu does not have couchdb anymore. need to install ppa     #                                                              #
   ##############################################################################
 
   exec { 'install-couchdb-add-repo-key':
     path => ['/usr/bin', '/usr/sbin'],
     command => "curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -",
   }
+
   exec { 'install-couchdb-add-repo-url':
     path => ['/usr/bin', '/usr/sbin', '/usr/local/sbin', '/usr/local/bin', '/sbin', '/bin'],
     command => "echo $puppet_does_not_allow_escaping | sudo tee -a /etc/apt/sources.list",
     require => Exec['install-couchdb-add-repo-key'],
   }
+
   exec { 'install-couchdb-update-apt':
     path => ['/usr/bin', '/usr/sbin'],
     command => "sudo apt-get update -y",
     require => Exec['install-couchdb-add-repo-url'],
   }
+
   exec { 'install-couchdb-install-finally':
     path => ['/usr/bin', '/usr/sbin'],
-    command => "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=2.1.2~bionic",
+    command => "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=3.1.1~focal",
     require => Exec['install-couchdb-update-apt'],
   }
 

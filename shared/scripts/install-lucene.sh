@@ -24,6 +24,6 @@ pushd /tmp/couchdb-lucene-2.1.0
 patch -p1 </vagrant_shared/couchdb-lucene.patch
 mvn clean install war:war
 popd
-cp --remove-destination /tmp/couchdb-lucene-2.1.0/target/couchdb-lucene-*.war /opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33/webapps/couchdb-lucene.war
+cp --remove-destination /tmp/couchdb-lucene-2.1.0/target/couchdb-lucene-*.war /opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33/webapps/couchdb-lucene.war
 
 echo "-[shell provisioning] end of installing couchdb-lucene."

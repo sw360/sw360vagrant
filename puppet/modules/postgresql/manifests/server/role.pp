@@ -1,4 +1,23 @@
-# Define for creating a database role. See README.md for more information
+# @summary Define for creating a database role.
+#
+# @param update_password If set to true, updates the password on changes. Set this to false to not modify the role's password after creation.
+# @param password_hash Sets the hash to use during password creation.
+# @param createdb Specifies whether to grant the ability to create new databases with this role.
+# @param createrole Specifies whether to grant the ability to create new roles with this role. 
+# @param db Database used to connect to. 
+# @param port Port to use when connecting.
+# @param login Specifies whether to grant login capability for the new role.
+# @param inherit Specifies whether to grant inherit capability for the new role.
+# @param superuser Specifies whether to grant super user capability for the new role.
+# @param replication Provides provides replication capabilities for this role if set to true.
+# @param connection_limit Specifies how many concurrent connections the role can make. Default value: '-1', meaning no limit.
+# @param username Defines the username of the role to create.
+# @param connect_settings Specifies a hash of environment variables used when connecting to a remote server.
+# @param ensure Specify whether to create or drop the role. Specifying 'present' creates the role. Specifying 'absent' drops the role.
+# @param psql_user Sets the OS user to run psql
+# @param psql_group Sets the OS group to run psql
+# @param psql_path Sets path to psql command
+# @param module_workdir Specifies working directory under which the psql command should be executed. May need to specify if '/tmp' is on volume mounted with noexec option.
 define postgresql::server::role(
   $update_password = true,
   $password_hash    = false,
@@ -13,12 +32,12 @@ define postgresql::server::role(
   $connection_limit = '-1',
   $username         = $title,
   $connect_settings = $postgresql::server::default_connect_settings,
+  $psql_user        = $postgresql::server::user,
+  $psql_group       = $postgresql::server::group,
+  $psql_path        = $postgresql::server::psql_path,
+  $module_workdir   = $postgresql::server::module_workdir,
   Enum['present', 'absent'] $ensure = 'present',
 ) {
-  $psql_user      = $postgresql::server::user
-  $psql_group     = $postgresql::server::group
-  $psql_path      = $postgresql::server::psql_path
-  $module_workdir = $postgresql::server::module_workdir
 
   #
   # Port, order of precedence: $port parameter, $connect_settings[PGPORT], $postgresql::server::port
