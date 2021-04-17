@@ -150,14 +150,14 @@ class sw360single {
 
   # central couchdb file ...
   file { 'couchdb_test.properties':
-    path    => "${sw360_settings_path}/couchdb_test.properties",
-    content => template('sw360/couchdb_test.properties.erb'),
+    path    => "${sw360_settings_path}/couchdb-test.properties",
+    content => template('sw360/couchdb-test.properties.erb'),
     owner   => 'siemagrant',
     ensure  => present,
     require => File['sw360-dir']
   }
 
-  # another central couchdb file ...
+  # another "central" couchdb file ...
   file { 'databasetest.properties':
     path    => "${sw360_settings_path}/databasetest.properties",
     content => template('sw360/databasetest.properties.erb'),
@@ -174,6 +174,25 @@ class sw360single {
     ensure  => present,
     require => File['sw360-dir']
   }
+
+  # creation of separate settings dir for authorization component
+  file { 'sw360-authorization-dir':
+    path    => "${sw360_settings_path}/authorization",
+    owner   => 'siemagrant',
+    group  => 'siemagrant',
+    ensure => 'directory',
+  }
+
+  # Configuration of the sw360 rest api (spring stuff)
+  file { 'application-auth.yml':
+    path    => "${sw360_settings_path}/authorization/application.yml",
+    content => template('sw360/application.yml.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-authorization-dir']
+  }
+
+  ## todo setting for resource server for REST (runs with default settings)
 
   ###################
   ## Apache2 Setup ##
