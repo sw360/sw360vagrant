@@ -58,6 +58,45 @@
     ProxyPass !
   </Location>
 
+  <Location /authorization>
+       ProxyPass http://127.0.0.1:8080/authorization
+       ProxyPassReverse http://127.0.0.1:8080/authorization
+       ProxyErrorOverride off
+       Order allow,deny
+       Allow from all
+       # MellonEnable "off"
+  </Location>
+  <Location /authorization/client-management>
+       ProxyPass http://127.0.0.1:8080/authorization/client-management
+       ProxyPassReverse http://127.0.0.1:8080/authorization/client-management
+       ProxyErrorOverride off
+       Order allow,deny
+       Allow from all
+       # MellonEnable "auth"
+  </Location>
+  <Location /authorization/oauth/token>
+       ProxyPass http://127.0.0.1:8080/authorization/oauth/token
+       ProxyPassReverse http://127.0.0.1:8080/authorization/oauth/token
+       ProxyErrorOverride off
+       Order allow,deny
+       Allow from all
+       <If "%{QUERY_STRING} =~ /grant_type=refresh_token/">
+         # MellonEnable "off"
+       </If>
+       <Else>
+         # MellonEnable "auth"
+       </Else>
+  </Location>
+
+  <Location /resource>
+       ProxyPass http://127.0.0.1:8080/resource
+       ProxyPassReverse http://127.0.0.1:8080/resource
+       ProxyErrorOverride off
+       Order allow,deny
+       Allow from all
+       # MellonEnable "off"
+  </Location>
+
   <LocationMatch  ^/(manager|attachments|bdpimport|components|cvesearch|fossology|layouttpl|licenseinfo|licenses|moderation|projects|schedule|search|users|vendors|vulnerabilities)>
     Order allow,deny
     Deny from all;
