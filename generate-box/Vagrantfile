@@ -91,6 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   facts = {
       "tomcat_admin_password" => SW360_default_password,
+      "couchdb_admin_password" => SW360_default_password,
       "proxy_yes" => SW360_proxy,
       "enable_mellon" => SW360_enable_mellon
   }

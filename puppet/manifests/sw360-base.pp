@@ -45,6 +45,26 @@ class sw360base {
     require => Exec['install-couchdb-update-apt'],
   }
 
+  ###################
+  ## CouchDB Setup ##
+  ###################
+
+  # local.ini: Setup of CouchDB bind port and bind adress
+  file { 'couchdb_local.ini':
+    path    => '/opt/couchdb/etc/local.ini',
+    ensure  => 'present',
+    owner   => couchdb,
+    content => template('sw360/couchdb_local.ini.erb'),
+    notify  => Service["couchdb"], # Will cause the service to restart
+  }
+
+  # Restart CouchDB
+  service { 'couchdb':
+    ensure  => "running",
+    enable  => "true",
+    require => File['couchdb_local.ini'],
+  }
+
   ##############################################################################
   # User configuration, to create the siemagrant user when starting from a     #
   # standard box.                                                              #
