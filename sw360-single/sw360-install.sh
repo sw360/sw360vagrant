@@ -27,7 +27,7 @@ source $configurationFile
 
 wd=/sw360portal
 mavenParameters=""
-mavenMemory="-Xmx1024m -XX:MaxPermSize=1024m"
+mavenMemory="-Xmx1536m -XX:MaxPermSize=1024m"
 
 doFrontend=false
 doPortlets=false
