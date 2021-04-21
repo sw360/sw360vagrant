@@ -18,8 +18,8 @@ class sw360single {
   $couchdb_bind_port    = '5984'
 
   # Path definitions
-  $tomcat_path='/opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33'
-  $liferay_install='/opt/liferay-ce-portal-7.3.3-ga4'
+  $tomcat_path='/opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33'
+  $liferay_install='/opt/liferay-ce-portal-7.3.4-ga5'
   $sw360_settings_path='/etc/sw360'
 
   ############################
@@ -61,25 +61,6 @@ class sw360single {
   postgresql::server::db { 'lportal':
     user     => 'liferay',
     password => postgresql_password('liferay', $liferay_admin_password),
-  }
-
-  ###################
-  ## CouchDB Setup ##
-  ###################
-
-  # local.ini: Setup of CouchDB bind port and bind adress
-  file { 'couchdb_local.ini':
-    path    => '/etc/couchdb/local.ini',
-    ensure  => 'present',
-    owner   => couchdb,
-    content => template('sw360/couchdb_local.ini.erb'),
-    notify  => Service["couchdb"], # Will cause the service to restart
-  }
-
-  # Restart CouchDB
-  service { 'couchdb':
-    ensure  => "running",
-    enable  => "true",
   }
 
   ##################
@@ -139,15 +120,31 @@ class sw360single {
   }
 
   # Configuration of the sw360 for accessing couchdb
-  # TODO central couchdb file does not work because it
-  # spoils the test configuration, leaving it on files in bundles
-  # file { 'couchdb.properties':
-  #  path    => "${sw360_settings_path}/couchdb.properties",
-  #  content => template('sw360/couchdb.properties.erb'),
-  #  owner   => 'siemagrant',
-  #  ensure  => present,
-  #  require => File['sw360-dir']
-  # }
+  file { 'couchdb.properties':
+    path    => "${sw360_settings_path}/couchdb.properties",
+    content => template('sw360/couchdb.properties.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-dir']
+  }
+
+  # central couchdb file ...
+  file { 'couchdb_test.properties':
+    path    => "${sw360_settings_path}/couchdb-test.properties",
+    content => template('sw360/couchdb-test.properties.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-dir']
+  }
+
+  # another "central" couchdb file ...
+  file { 'databasetest.properties':
+    path    => "${sw360_settings_path}/databasetest.properties",
+    content => template('sw360/databasetest.properties.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-dir']
+  }
 
   # Configuration of the sw360 itself
   file { 'sw360.properties':
@@ -157,6 +154,25 @@ class sw360single {
     ensure  => present,
     require => File['sw360-dir']
   }
+
+  # creation of separate settings dir for authorization component
+  file { 'sw360-authorization-dir':
+    path    => "${sw360_settings_path}/authorization",
+    owner   => 'siemagrant',
+    group  => 'siemagrant',
+    ensure => 'directory',
+  }
+
+  # Configuration of the sw360 rest api (spring stuff)
+  file { 'application-auth.yml':
+    path    => "${sw360_settings_path}/authorization/application.yml",
+    content => template('sw360/application.yml.erb'),
+    owner   => 'siemagrant',
+    ensure  => present,
+    require => File['sw360-authorization-dir']
+  }
+
+  ## todo setting for resource server for REST (runs with default settings)
 
   ###################
   ## Apache2 Setup ##

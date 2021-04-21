@@ -27,7 +27,7 @@ source $configurationFile
 
 wd=/sw360portal
 mavenParameters=""
-mavenMemory="-Xmx1024m -XX:MaxPermSize=1024m"
+mavenMemory="-Xmx1536m -XX:MaxPermSize=1024m"
 
 doFrontend=false
 doPortlets=false
@@ -166,7 +166,7 @@ fi
 if [[ "$(ps -faux | grep 'Bootstrap start' | grep -vc grep)" -eq "0" ]]; then
     echo "Starting tomcat"
     eval "$( /vagrant_shared/scripts/catalinaOpts.sh "${defaultOpts[@]}" "$@" )"
-    CATALINA_OPTS="${CATALINA_OPTS}" /opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33/bin/startup.sh
+    CATALINA_OPTS="${CATALINA_OPTS}" /opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33/bin/startup.sh
     echo "Waiting for reply of tomcat manager..."
     while [[ "$RESULT" -ne "22" ]]; do
         curl --fail http://localhost:8080/manager/html 2> /dev/null || RESULT=$?

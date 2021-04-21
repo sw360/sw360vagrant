@@ -2,17 +2,16 @@ require 'spec_helper_acceptance'
 
 # These tests ensure that postgres can change itself to an alternative port
 # properly.
-describe 'postgresql::server', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
+describe 'postgresql::server' do
   it 'on an alternative port' do
     pp = <<-MANIFEST
-      class { 'postgresql::server': port => '55433' }
+      class { 'postgresql::server': port => '55433', manage_selinux => true }
     MANIFEST
 
-    apply_manifest(pp, catch_failures: true)
-    apply_manifest(pp, catch_changes: true)
+    idempotent_apply(pp)
   end
 
-  describe port(55433) do # rubocop:disable Style/NumericLiterals
+  describe port(55_433) do
     it { is_expected.to be_listening }
   end
 

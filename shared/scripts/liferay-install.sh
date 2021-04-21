@@ -15,15 +15,15 @@
 set -e
 echo "-[shell provisioning] Start installing liferay ..."
 
-sudo cp /vagrant_shared/packages/liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz /opt
+sudo cp /vagrant_shared/packages/liferay-ce-portal-tomcat-7.3.4-ga5-20200811154319029.tar.gz /opt
 cd /opt
-sudo tar -xvf liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
-sudo chown -R siemagrant:siemagrant liferay-ce-portal-7.3.3-ga4
-sudo rm -f liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
+sudo tar -xvf liferay-ce-portal-tomcat-7.3.4-ga5-20200811154319029.tar.gz
+sudo chown -R siemagrant:siemagrant liferay-ce-portal-7.3.4-ga5
+sudo rm -f liferay-ce-portal-tomcat-7.3.4-ga5-20200811154319029.tar.gz
 
 #
 # postgresql jdbc driver needs to be covered as well ...
 #
-cp /vagrant_shared/packages/postgresql-42.2.9.jar /opt/liferay-ce-portal-7.3.3-ga4/tomcat-9.0.33/lib/ext
+cp /vagrant_shared/packages/postgresql-42.2.9.jar /opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33/lib/ext
 
 echo "-[shell provisioning] end of installing liferay."

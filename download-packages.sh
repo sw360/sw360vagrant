@@ -24,8 +24,8 @@ set -eo pipefail
 #
 # downloading all the big downloads
 #
-packages='https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box
-https://sourceforge.net/projects/lportal/files/Liferay%20Portal/7.3.3%20GA4/liferay-ce-portal-tomcat-7.3.3-ga4-20200701015330959.tar.gz
+packages='https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-vagrant.box
+https://sourceforge.net/projects/lportal/files/Liferay%20Portal/7.3.4%20GA5/liferay-ce-portal-tomcat-7.3.4-ga5-20200811154319029.tar.gz
 https://search.maven.org/remotecontent?filepath=commons-codec/commons-codec/1.12/commons-codec-1.12.jar commons-codec-1.12.jar
 https://repo1.maven.org/maven2/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar commons-compress-1.20.jar
 https://search.maven.org/remotecontent?filepath=org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar commons-collections4-4.4.jar
@@ -60,7 +60,7 @@ downloadAll(){
             return
         fi
         if [ -e $2 ]; then
-            onlineSize=`wget $1 --spider --server-response -O - 2>&1 | sed -ne '/Content-Length/{s/.*: //;p}'`
+            onlineSize=`wget $1 --spider --server-response -O - 2>&1 | sed -ne '/Content-Length/{s/.*: //;p;}'`
             localSize=`wc -c < $2`
             if [ "$onlineSize" = "$localSize" ]; then
                 echo "-[] The file $1 has the same size as the online version. No download."
@@ -96,6 +96,10 @@ cleanAll(){
         echo "remove old  xenial-server-cloudimg-amd64-vagrant.box (downloaded by old version of this script)"
         rm  xenial-server-cloudimg-amd64-vagrant.box
     fi
+    if [ -e  bionic-server-cloudimg-amd64-vagrant.box ]; then
+        echo "remove old  bionic-server-cloudimg-amd64-vagrant.box (downloaded by old version of this script)"
+        rm  bionic-server-cloudimg-amd64-vagrant.box
+    fi
     echo "remove old liferay-tomcat-bundle versions"
     rm liferay-portal-tomcat-6.2-ce-ga*.zip 2>/dev/null
 }
@@ -114,7 +118,7 @@ setPermissions(){
     popd &>/dev/null
 }
 addBoxToVagrant(){
-        vagrant box add --force bionic-server-cloudimg-amd64-vagrant "bionic-server-cloudimg-amd64-vagrant.box"
+        vagrant box add --force focal-server-cloudimg-amd64-vagrant "focal-server-cloudimg-amd64-vagrant.box"
         vagrant box add --force aws-dummy "dummy.box"
 }
 

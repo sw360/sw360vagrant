@@ -1,4 +1,4 @@
-# PRIVATE CLASS: do not use directly
+# @api private
 class postgresql::params inherits postgresql::globals {
   $version                    = $postgresql::globals::globals_version
   $postgis_version            = $postgresql::globals::globals_postgis_version
@@ -21,8 +21,14 @@ class postgresql::params inherits postgresql::globals {
   $manage_pg_hba_conf         = pick($manage_pg_hba_conf, true)
   $manage_pg_ident_conf       = pick($manage_pg_ident_conf, true)
   $manage_recovery_conf       = pick($manage_recovery_conf, false)
+  $manage_selinux             = pick($manage_selinux, false)
   $package_ensure             = 'present'
   $module_workdir             = pick($module_workdir,'/tmp')
+  $password_encryption        = undef
+  $extra_systemd_config       = ''
+  $manage_datadir             = true
+  $manage_logdir              = true
+  $manage_xlogdir             = true
 
   # Amazon Linux's OS Family is 'Linux', operating system 'Amazon'.
   case $::osfamily {
@@ -73,10 +79,33 @@ class postgresql::params inherits postgresql::globals {
         }
         $confdir                = pick($confdir, $datadir)
       }
+
+      case $::operatingsystem {
+        'Amazon': {
+          $service_reload = "service ${service_name} reload"
+          $service_status = "service ${service_name} status"
+        }
+
+        # RHEL 5 uses SysV init, RHEL 6 uses upstart.  RHEL 7 and 8 both use systemd.
+        'RedHat', 'CentOS', 'Scientific', 'OracleLinux': {
+          if $::operatingsystemrelease =~ /^[78].*/ {
+            $service_reload = "systemctl reload ${service_name}"
+            $service_status = "systemctl status ${service_name}"
+          } else {
+            $service_reload = "service ${service_name} reload"
+            $service_status = "service ${service_name} status"
+          }
+        }
+
+        # Default will catch Fedora which uses systemd
+        default: {
+          $service_reload = "systemctl reload ${service_name}"
+          $service_status = "systemctl status ${service_name}"
+        }
+      }
+
       $psql_path           = pick($psql_path, "${bindir}/psql")
 
-      $service_status      = $service_status
-      $service_reload      = "service ${service_name} reload"
       $perl_package_name   = pick($perl_package_name, 'perl-DBD-Pg')
       $python_package_name = pick($python_package_name, 'python-psycopg2')
 
@@ -147,6 +176,8 @@ class postgresql::params inherits postgresql::globals {
       $contrib_package_name   = pick($contrib_package_name, "postgresql-contrib-${version}")
       if $postgis_version and versioncmp($postgis_version, '2') < 0 {
         $postgis_package_name = pick($postgis_package_name, "postgresql-${version}-postgis")
+      } elsif $postgis_version and versioncmp($postgis_version, '3') >= 0 {
+        $postgis_package_name = pick($postgis_package_name, "postgresql-${version}-postgis-3")
       } else {
         $postgis_package_name = pick($postgis_package_name, "postgresql-${version}-postgis-${postgis_version}")
       }
@@ -205,15 +236,15 @@ class postgresql::params inherits postgresql::globals {
 
     'FreeBSD': {
       case $version {
-        '96', '10': {
-          $user                 = pick($user, 'postgres')
-          $group                = pick($group, 'postgres')
-          $datadir              = pick($datadir, "/var/db/postgres/data${version}")
-        }
-        default: {
+        '94', '95': {
           $user                 = pick($user, 'pgsql')
           $group                = pick($group, 'pgsql')
           $datadir              = pick($datadir, '/usr/local/pgsql/data')
+        }
+        default: {
+          $user                 = pick($user, 'postgres')
+          $group                = pick($group, 'postgres')
+          $datadir              = pick($datadir, "/var/db/postgres/data${version}")
         }
       }
 

@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if SW360_provider == "virtualbox"
 
     # Every Vagrant virtual environment requires a box to build off of.
-    config.vm.box = 'bionic-server-cloudimg-amd64-vagrant'
+    config.vm.box = 'focal-server-cloudimg-amd64-vagrant'
     config.disksize.size = SW360_VB_DISK
 
     # Virtualbox provider
@@ -91,6 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   facts = {
       "tomcat_admin_password" => SW360_default_password,
+      "couchdb_admin_password" => SW360_default_password,
       "proxy_yes" => SW360_proxy,
       "enable_mellon" => SW360_enable_mellon
   }
