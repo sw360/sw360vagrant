@@ -51,7 +51,7 @@ SW360_provider="virtualbox" # available providers for vagrant: virtualbox, aws
 # Virtualbox section
 # Please refer to SW360_provider and set the value to virtualbox
 SW360_VB_CPUs=4 # well, how many logical cores ...
-SW360_VB_RAM=11000 # RAM in MB, should be at least 5GB
+SW360_VB_RAM=12000 # RAM in MB, should be at least 5GB
 SW360_VB_DISK="20GB" # disk space in GB, should be at least 12GB
 
 # AWS section
