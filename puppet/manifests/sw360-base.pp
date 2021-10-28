@@ -12,7 +12,7 @@ class sw360base {
   # Path definitions
   $java_home='/usr/lib/jvm/java-11-openjdk-amd64/'
   $tomcat_path='/opt/liferay-ce-portal-7.3.4-ga5/tomcat-9.0.33'
-  $puppet_does_not_allow_escaping='deb https://apache.bintray.com/couchdb-deb focal main'
+  $puppet_does_not_allow_escaping='deb [signed-by=/usr/share/keyrings/couchdb-archive-keyring.gpg] https://apache.jfrog.io/artifactory/couchdb-deb/ focal main'
 
   package { ["make", "software-properties-common", "unzip", "curl", "git-core", "maven", "openjdk-11-jdk", "postgresql", "apache2", "libapache2-mod-auth-mellon"]:
     ensure  => present,
@@ -24,7 +24,7 @@ class sw360base {
 
   exec { 'install-couchdb-add-repo-key':
     path => ['/usr/bin', '/usr/sbin'],
-    command => "curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -",
+    command => "curl -L https://couchdb.apache.org/repo/keys.asc | gpg --dearmor | sudo tee /usr/share/keyrings/couchdb-archive-keyring.gpg >/dev/null 2>&1",
   }
 
   exec { 'install-couchdb-add-repo-url':
